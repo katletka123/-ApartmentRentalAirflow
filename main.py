@@ -7,11 +7,13 @@ import os
 load_dotenv()
 
 conn = psycopg2.connect(
-    db_host=os.getenv("host"),
-    database=os.getenv("database"),
-    db_user=os.getenv("user"),
-    db_password=os.getenv("password")
+    host=os.getenv("DB_HOST"),
+    dbname=os.getenv("POSTGRES_DB"),
+    user=os.getenv("POSTGRES_USER"),
+    password=os.getenv("POSTGRES_PASSWORD"),
+    port=os.getenv("DB_PORT")
 )
+
 
 for i in range(1,4):
     url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={i}&search%5Border%5D=created_at%3Adesc"
@@ -24,8 +26,8 @@ for i in range(1,4):
 
     for box in boxes:
         dist_and_date=box.find(attrs={'data-testid': 'location-date'}).text.strip().split(" - ")
-        date=dist_and_date[1]
-        tmp_district=dist_and_date[0].split(",")
+        date=district_date_box[1]
+        tmp_district=district_date_box[0].split(",")
         district=tmp_district[1]
 
         price=box.find(attrs={'data-testid':'ad-price'}).text.strip()
