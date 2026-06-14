@@ -1,6 +1,7 @@
 import psycopg2
 import requests
 from datetime import datetime
+from datetime import date
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import os
@@ -23,20 +24,21 @@ def date_generate(row_date):
         "listopada": 11,
         "grudnia": 12
     }
-    # if "dzisiaj" in date:
-    #     date = datetime.today().date()
-    #     return date
-    # else:
-    #     date_list = re.search(r"(\d{1,2})\s+([a-ząćęłńóśźż]+)\s+(\d{4})", row_date.lower())
-    #     if date_list:
-    #         day = int(date_list.group(1))
-    #         month = months[date_list.group(2)]
-    #         year = int(date_list.group(3))
-    #         date = datetime(year, month, day).date()
-    #         return date
+    if "dzisiaj" in row_date:
+        publication_date = datetime.today().date()
+        return publication_date
+    else:
+        date_list = re.search(r"(\d{1,2})\s+([a-ząćęłńóśźż]+)\s+(\d{4})", row_date.lower())
+        if date_list:
+            day = int(date_list.group(1))
+            month = months[date_list.group(2)]
+            year = int(date_list.group(3))
+            publication_date = datetime(year, month, day).date()
+            return publication_date
 
 
-
+def row_transform_to_silver(data):
+    pass
 
 load_dotenv()
 
@@ -83,14 +85,14 @@ for i in range(1,6):
 
         id_num=box.get('id')
 
-        row_data = {
+        row_data_dict = {
             'id': id_num,
             'row_district': tmp_district,
             'row_date': district_and_date_box[1],
             'row_price': price,
             'row_area': area[0]
         }
-        row_data_list.append(row_data)
+        row_data_list.append(row_data_dict)
 
         # data_list={
         #     'id': id_num,
@@ -102,26 +104,28 @@ for i in range(1,6):
         # }
         # data_lists.append(data_list)
 
+
+
     create_row_table="""
         CREATE TABLE IF NOT EXISTS row_apartments (
         id INTEGER PRIMARY KEY,
         row_district VARCHAR(100) NOT NULL,
         row_date VARCHAR(100),
         row_price VARCHAR(100),
-        row_area  VARCHAR(100)
+        row_area  VARCHAR(100),
+        ingesting_date DATE DEFAULT NOW()
     );
     """
 
-    # create_silver_table= """
-    #     CREATE TABLE IF NOT EXISTS apart (
-    #     id INTEGER PRIMARY KEY,
-    #     district VARCHAR(100) NOT NULL,
-    #     date VARCHAR(100),
-    #     price VARCHAR(100),
-    #     area  VARCHAR(100),
-    #     price_per_meter VARCHAR(100)
-    # );
-    # """
+    create_silver_table= """
+        CREATE TABLE IF NOT EXISTS silver_apartments (
+        id INTEGER PRIMARY KEY,
+        district VARCHAR(100) NOT NULL,
+        date VARCHAR(100),
+        price VARCHAR(100),
+        area  VARCHAR(100)
+    );
+    """
 
     insert_row_table="""
         INSERT INTO row_apartments (id, row_district, row_date, row_price, row_area)
@@ -148,7 +152,7 @@ for i in range(1,6):
     cursor = conn.cursor()
 
     cursor.execute(create_row_table)
-    # cursor.execute(create_silver_table)
+    cursor.execute(create_silver_table)
 
     conn.commit()
 
@@ -157,6 +161,12 @@ for i in range(1,6):
             insert_row_table,
             (data['id'], data['row_district'], data['row_date'], data['row_price'], data['row_area'])
         )
+    today=date.today()
 
-
+    cursor.execute(
+        "SELECT * FROM row_apartaments WHERE ingesting_date=%s",
+        (today,)
+    )
+    data_from_row = cursor.fetchone()
+    row_transform_to_silver(data_from_row)
     conn.commit()
