@@ -59,7 +59,8 @@ def raw_transform_to_silver(data):
     silver_date=date_generate(tmp_district_and_date[1])
 
     price, negotiable = price_and_negotiable_generate(data[2])
-    area=data[3]
+    tmp_area=data[3].split(' ')
+    area=tmp_area[0].replace(',','.')
 
     silver_data_list=[]
     silver_data_dict = {
@@ -132,13 +133,14 @@ for i in range(1):
     );
     """
 
+
     create_silver_table= """
         CREATE TABLE IF NOT EXISTS silver_apartments (
         id INTEGER PRIMARY KEY,
         district VARCHAR(100) NOT NULL,
         date VARCHAR(100),
-        price_zl VARCHAR(100),
-        area  VARCHAR(100),
+        price_zl NUMERIC,
+        area_m2  NUMERIC,
         ready_to_negotiate BOOLEAN
     );
     """
@@ -154,14 +156,14 @@ for i in range(1):
             """
 
     insert_silver_table="""
-        INSERT INTO silver_apartments (id, district, date, price_zl, area, ready_to_negotiate)
+        INSERT INTO silver_apartments (id, district, date, price_zl, area_m2, ready_to_negotiate)
         VALUES (%s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO
         UPDATE SET
             district=EXCLUDED.district,
             date=EXCLUDED.date,
             price_zl=EXCLUDED.price_zl,
-            area=EXCLUDED.area,
+            area_m2=EXCLUDED.area_m2,
             ready_to_negotiate=EXCLUDED.ready_to_negotiate;
             """
     cursor = conn.cursor()
