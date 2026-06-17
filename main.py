@@ -1,11 +1,56 @@
 import psycopg2
 import requests
-from datetime import datetime
-from datetime import date
+from datetime import date,timedelta,datetime
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import os
 import re
+
+today=datetime.today().date()
+yesterday= today-timedelta(days=1)
+
+create_raw_table="""
+        CREATE TABLE IF NOT EXISTS raw_apartments (
+        id INTEGER PRIMARY KEY,
+        date_and_district VARCHAR(100),
+        price VARCHAR(100),
+        area  VARCHAR(100),
+        ingesting_date DATE DEFAULT NOW()
+    );
+    """
+
+create_silver_table= """
+        CREATE TABLE IF NOT EXISTS silver_apartments (
+        id INTEGER PRIMARY KEY,
+        district VARCHAR(100) NOT NULL,
+        date VARCHAR(100),
+        price_zl NUMERIC,
+        area_m2  NUMERIC,
+        ready_to_negotiate BOOLEAN
+    );
+    """
+
+insert_raw_table="""
+        INSERT INTO raw_apartments (id, date_and_district, price, area)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT (id) DO 
+        UPDATE SET
+            date_and_district=EXCLUDED.date_and_district,
+            price=EXCLUDED.price,
+            area=EXCLUDED.area;
+            """
+
+insert_silver_table="""
+        INSERT INTO silver_apartments (id, district, date, price_zl, area_m2, ready_to_negotiate)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT (id) DO
+        UPDATE SET
+            district=EXCLUDED.district,
+            date=EXCLUDED.date,
+            price_zl=EXCLUDED.price_zl,
+            area_m2=EXCLUDED.area_m2,
+            ready_to_negotiate=EXCLUDED.ready_to_negotiate;
+            """
 
 def price_and_negotiable_generate(raw_price):
     if "do negocjacji" in raw_price.lower():
@@ -45,33 +90,35 @@ def date_generate(raw_date):
             publication_date = datetime(year, month, day).date()
             return publication_date
 
-
-def raw_transform_to_silver(data):
-    silver_id=data[0]
-
-    tmp_district_and_date=data[1].split(' - ')
-    tmp_district=tmp_district_and_date[0].split(',')
-    if len(tmp_district)>1:
-        silver_district=tmp_district[1]
+def date_district_separate(date_and_district):
+    tmp_district_and_date = date_and_district.split(' - ')
+    tmp_district = tmp_district_and_date[0].split(',')
+    if len(tmp_district) > 1:
+        silver_district = tmp_district[1]
     else:
-        silver_district="unknown"
+        silver_district = "unknown"
 
-    silver_date=date_generate(tmp_district_and_date[1])
+    silver_date = date_generate(tmp_district_and_date[1])
 
-    price, negotiable = price_and_negotiable_generate(data[2])
-    tmp_area=data[3].split(' ')
-    area=tmp_area[0].replace(',','.')
+    return silver_district,silver_date
 
-    silver_data_list=[]
-    silver_data_dict = {
-        'id': silver_id,
-        'silver_district': silver_district,
-        'silver_date': silver_date,
-        'silver_price': price,
-        'silver_area': area,
-        'ready_to_negotiate': negotiable
-    }
-    silver_data_list.append(silver_data_dict)
+def raw_transform_to_silver(raw_data):
+    silver_data_list = []
+    for data in raw_data:
+        silver_id=data[0]
+        silver_district,silver_date=date_district_separate(data[1])
+        price, negotiable = price_and_negotiable_generate(data[2])
+        tmp_area=data[3].split(' ')
+        area=tmp_area[0].replace(',','.')
+        silver_data_dict = {
+            'id': silver_id,
+            'silver_district': silver_district,
+            'silver_date': silver_date,
+            'silver_price': price,
+            'silver_area': area,
+            'ready_to_negotiate': negotiable
+        }
+        silver_data_list.append(silver_data_dict)
     return silver_data_list
 
 load_dotenv()
@@ -84,16 +131,27 @@ conn = psycopg2.connect(
     port=os.getenv("DB_PORT")
 )
 
+cursor = conn.cursor()
 
-for i in range(1):
-    url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={i}&search%5Border%5D=created_at%3Adesc"
+cursor.execute(create_raw_table)
+cursor.execute(create_silver_table)
+
+conn.commit()
+
+stop_pars=False
+page=1
+while not stop_pars:
+    # собрать с сайта инфу
+    url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={page}&search%5Border%5D=created_at%3Adesc"
     headers = {"User-Agent": "Mozilla/5.0"}
     response = requests.get(url, headers=headers)
     print("Код ответа:", response.status_code)
     soup = BeautifulSoup(response.text, "html.parser")
     raw_data_list=[]
     boxes = soup.find_all(attrs={'data-testid': 'l-card'})
+    #гдето тут стоп парс
 
+    #обработка информации
     for box in boxes:
         id_num = box.get('id')
 
@@ -118,79 +176,26 @@ for i in range(1):
         }
         raw_data_list.append(raw_data_dict)
 
-
-
-
-
-
-    create_raw_table="""
-        CREATE TABLE IF NOT EXISTS raw_apartments (
-        id INTEGER PRIMARY KEY,
-        date_and_district VARCHAR(100),
-        price VARCHAR(100),
-        area  VARCHAR(100),
-        ingesting_date DATE DEFAULT NOW()
-    );
-    """
-
-
-    create_silver_table= """
-        CREATE TABLE IF NOT EXISTS silver_apartments (
-        id INTEGER PRIMARY KEY,
-        district VARCHAR(100) NOT NULL,
-        date VARCHAR(100),
-        price_zl NUMERIC,
-        area_m2  NUMERIC,
-        ready_to_negotiate BOOLEAN
-    );
-    """
-
-    insert_raw_table="""
-        INSERT INTO raw_apartments (id, date_and_district, price, area)
-        VALUES (%s, %s, %s, %s)
-        ON CONFLICT (id) DO 
-        UPDATE SET
-            date_and_district=EXCLUDED.date_and_district,
-            price=EXCLUDED.price,
-            area=EXCLUDED.area;
-            """
-
-    insert_silver_table="""
-        INSERT INTO silver_apartments (id, district, date, price_zl, area_m2, ready_to_negotiate)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        ON CONFLICT (id) DO
-        UPDATE SET
-            district=EXCLUDED.district,
-            date=EXCLUDED.date,
-            price_zl=EXCLUDED.price_zl,
-            area_m2=EXCLUDED.area_m2,
-            ready_to_negotiate=EXCLUDED.ready_to_negotiate;
-            """
-    cursor = conn.cursor()
-
-    cursor.execute(create_raw_table)
-    cursor.execute(create_silver_table)
-
-    conn.commit()
-
     for data in raw_data_list:
         cursor.execute(
             insert_raw_table,
             (data['id'], data['raw_date_and_district'], data['raw_price'], data['raw_area'])
         )
-    today=date.today()
 
     cursor.execute(
         "SELECT * FROM raw_apartments WHERE ingesting_date=%s",
-        (today,)
+        (yesterday,)
     )
+    # тут брэйк
     data_from_raw = cursor.fetchall()
-    for el in data_from_raw:
-        silver_data_list=raw_transform_to_silver(el)
-        for data in silver_data_list:
-            cursor.execute(
-                insert_silver_table,
-                (data['id'], data['silver_district'], data['silver_date'], data['silver_price'], data['silver_area'],data['ready_to_negotiate'])
-            )
+    silver_data_list=raw_transform_to_silver(data_from_raw)
+    for data in silver_data_list:
+        cursor.execute(
+            insert_silver_table,
+            (data['id'], data['silver_district'], data['silver_date'], data['silver_price'], data['silver_area'],data['ready_to_negotiate'])
+        )
 
     conn.commit()
+    page+=1
+
+#аирфлоу>>забрать с сайта>>роу таблица>>cильвер таблица
