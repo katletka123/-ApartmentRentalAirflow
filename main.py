@@ -1,13 +1,12 @@
 import psycopg2
 import requests
-from datetime import date,timedelta,datetime
+from datetime import date, timedelta, datetime
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import os
 import re
 
-today=datetime.today().date()
-yesterday= today-timedelta(days=1)
+YESTERDAY = datetime.today().date() - timedelta(days=1)
 
 create_raw_table="""
         CREATE TABLE IF NOT EXISTS raw_apartments (
@@ -15,7 +14,7 @@ create_raw_table="""
         date_and_district VARCHAR(100),
         price VARCHAR(100),
         area  VARCHAR(100),
-        ingesting_date DATE DEFAULT NOW()
+        ingestion_date DATE DEFAULT CURRENT_DATE
     );
     """
 
@@ -100,13 +99,13 @@ def date_district_separate(date_and_district):
 
     silver_date = date_generate(tmp_district_and_date[1])
 
-    return silver_district,silver_date
+    return silver_district, silver_date
 
 def raw_transform_to_silver(raw_data):
     silver_data_list = []
     for data in raw_data:
         silver_id=data[0]
-        silver_district,silver_date=date_district_separate(data[1])
+        silver_district, silver_date=date_district_separate(data[1])
         price, negotiable = price_and_negotiable_generate(data[2])
         tmp_area=data[3].split(' ')
         area=tmp_area[0].replace(',','.')
@@ -120,6 +119,29 @@ def raw_transform_to_silver(raw_data):
         }
         silver_data_list.append(silver_data_dict)
     return silver_data_list
+
+def is_new_box(box):
+    district_and_date_box=box.find(attrs={'data-testid': 'location-date'}).text
+    box_date=date_district_separate(district_and_date_box)[1]
+    if box_date==YESTERDAY:
+        return True
+    else:
+        return False
+
+
+def get_new_boxes():
+    new_boxes=[]
+    for page in range(1,26):
+        url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={page}&search%5Border%5D=created_at%3Adesc"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, "html.parser")
+        boxes = soup.find_all(attrs={'data-testid': 'l-card'})
+        for box in boxes:
+            if is_new_box(box):
+                new_boxes.append(box)
+                page+=1
+    return new_boxes
 
 load_dotenv()
 
@@ -138,64 +160,47 @@ cursor.execute(create_silver_table)
 
 conn.commit()
 
-stop_pars=False
-page=1
-while not stop_pars:
-    # собрать с сайта инфу
-    url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={page}&search%5Border%5D=created_at%3Adesc"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers)
-    print("Код ответа:", response.status_code)
-    soup = BeautifulSoup(response.text, "html.parser")
-    raw_data_list=[]
-    boxes = soup.find_all(attrs={'data-testid': 'l-card'})
-    #гдето тут стоп парс
+boxes=get_new_boxes()
+raw_data_list = []
+print(len(boxes))
+for box in boxes:
+    print("hello")
+    id_num = box.get('id')
+    district_and_date_box=box.find(attrs={'data-testid': 'location-date'}).text
+    raw_price=box.find(attrs={'data-testid': 'ad-price'}).text
+    raw_area=box.find(attrs={'color': 'text-global-secondary'}).text
+    raw_data_dict = {
+        'id': id_num,
+        'raw_date_and_district': district_and_date_box,
+        'raw_price': raw_price,
+        'raw_area': raw_area
+    }
+    print(raw_data_dict)
+    raw_data_list.append(raw_data_dict)
 
-    #обработка информации
-    for box in boxes:
-        id_num = box.get('id')
-
-        district_and_date_box=box.find(attrs={'data-testid': 'location-date'}).text
-
-        raw_price=box.find(attrs={'data-testid': 'ad-price'}).text
-
-        raw_area=box.find(attrs={'color': 'text-global-secondary'}).text
-        print(district_and_date_box,raw_price,raw_area, sep=" ----")
-        # area_tmp=raw_area[0].split(" ")
-        # area_tmp_coma=area_tmp[0].replace(',','.')
-        # price_tmp=raw_price.split(" ")
-        # price_tmp_split=price_tmp[0]+price_tmp[1]
-        # price_for_m2=round(int(price_tmp_split)/float(area_tmp_coma),2)
-        # price_per_meter=f"{price_for_m2} zł/m2"
-
-        raw_data_dict = {
-            'id': id_num,
-            'raw_date_and_district': district_and_date_box,
-            'raw_price': raw_price,
-            'raw_area': raw_area
-        }
-        raw_data_list.append(raw_data_dict)
-
-    for data in raw_data_list:
-        cursor.execute(
-            insert_raw_table,
-            (data['id'], data['raw_date_and_district'], data['raw_price'], data['raw_area'])
-        )
-
+print(len(raw_data_list))
+for data in raw_data_list:
     cursor.execute(
-        "SELECT * FROM raw_apartments WHERE ingesting_date=%s",
-        (yesterday,)
+        insert_raw_table,
+        (data['id'], data['raw_date_and_district'], data['raw_price'], data['raw_area'])
     )
-    # тут брэйк
-    data_from_raw = cursor.fetchall()
-    silver_data_list=raw_transform_to_silver(data_from_raw)
-    for data in silver_data_list:
-        cursor.execute(
-            insert_silver_table,
-            (data['id'], data['silver_district'], data['silver_date'], data['silver_price'], data['silver_area'],data['ready_to_negotiate'])
-        )
+conn.commit()
 
-    conn.commit()
-    page+=1
+
+
+cursor.execute("""
+               SELECT * FROM raw_apartments
+               WHERE ingestion_date = CURRENT_DATE
+                """)
+data_from_raw = cursor.fetchall()
+silver_data_list=raw_transform_to_silver(data_from_raw)
+for data in silver_data_list:
+    cursor.execute(
+        insert_silver_table,
+        (data['id'], data['silver_district'], data['silver_date'], data['silver_price'], data['silver_area'],data['ready_to_negotiate'])
+    )
+
+conn.commit()
+
 
 #аирфлоу>>забрать с сайта>>роу таблица>>cильвер таблица
