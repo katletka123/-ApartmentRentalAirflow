@@ -1,6 +1,6 @@
 from datetime import datetime,timedelta
 YESTERDAY = datetime.today().date() - timedelta(days=1)
-import silver_function
+import silver_functions
 import requests
 from bs4 import BeautifulSoup
 
