@@ -21,7 +21,7 @@ insert_raw_table="""
 
 def is_new_box(box):
     district_and_date_box=box.find(attrs={'data-testid': 'location-date'}).text
-    box_date=silver_function.date_district_separate(district_and_date_box)[1]
+    box_date=silver_functions.date_district_separate(district_and_date_box)[1]
     if box_date==YESTERDAY:
         return True
     else:
