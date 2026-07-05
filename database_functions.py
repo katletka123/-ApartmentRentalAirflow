@@ -13,6 +13,8 @@ def get_connection():
     password=os.getenv("POSTGRES_PASSWORD"),
     port=os.getenv("DB_PORT")
 )
+
+
 create_raw_table="""
         CREATE TABLE IF NOT EXISTS raw_apartments (
         id INTEGER PRIMARY KEY,

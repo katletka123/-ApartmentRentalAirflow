@@ -1,8 +1,8 @@
 from datetime import datetime,timedelta
 YESTERDAY = datetime.today().date() - timedelta(days=1)
-import silver_functions
 import requests
 from bs4 import BeautifulSoup
+from silver_functions import date_district_separate
 
 insert_raw_table="""
         INSERT INTO raw_apartments (id, date_and_district, price, area)
@@ -21,7 +21,7 @@ insert_raw_table="""
 
 def is_new_box(box):
     district_and_date_box=box.find(attrs={'data-testid': 'location-date'}).text
-    box_date=silver_functions.date_district_separate(district_and_date_box)[1]
+    box_date=date_district_separate(district_and_date_box)[1]
     if box_date==YESTERDAY:
         return True
     else:

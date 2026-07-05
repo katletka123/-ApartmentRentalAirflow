@@ -1,5 +1,7 @@
 from datetime import datetime
 import re
+import numpy
+import numpy as np
 
 select_from_raw="""
             SELECT * FROM raw_apartments
@@ -30,9 +32,14 @@ def price_and_negotiable_generate(raw_price):
     else:
         negotiable=False
 
-    tmp_price = re.findall(r"\d+", raw_price)
-    price=int("".join(tmp_price))
-
+    tmp_price = re.findall(r"\d[\d\s,.]*", raw_price)
+    print(tmp_price)
+    if tmp_price:
+        price = float(
+            tmp_price[0]
+            .replace(" ", "")
+            .replace(",", ".")
+        )
     return price, negotiable
 
 def date_generate(raw_date):
@@ -73,6 +80,7 @@ def date_district_separate(date_and_district):
     return silver_district, silver_date
 
 def raw_transform_to_silver(raw_data):
+    silver_data_list_tmp = []
     silver_data_list = []
     for data in raw_data:
         silver_id=data[0]
@@ -88,5 +96,11 @@ def raw_transform_to_silver(raw_data):
             'silver_area': area,
             'ready_to_negotiate': negotiable
         }
-        silver_data_list.append(silver_data_dict)
+        silver_data_list_tmp.append(silver_data_dict)
+        prices=[silver_data_dict["silver_price"] for silver_data_dict in silver_data_list_tmp]
+        q_high=np.quantile(prices,0.95)
+        silver_data_list=[
+            silver_data_dict for silver_data_dict in silver_data_list_tmp
+            if silver_data_dict["silver_price"]<= q_high
+        ]
     return silver_data_list
