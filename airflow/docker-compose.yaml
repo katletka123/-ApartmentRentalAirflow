@@ -340,6 +340,11 @@ services:
         - ${ENV_FILE_PATH:-../.env}
       ports:
         - "5433:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres-db-volume:
+    name: airflow_postgres_db_volume
+  postgres_data:
+    name: postgres_data

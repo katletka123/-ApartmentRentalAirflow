@@ -29,7 +29,7 @@ def is_new_box(box):
 
 def get_new_boxes():
     new_boxes=[]
-    for page in range(1,3):
+    for page in range(1,26):
         url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={page}&search%5Border%5D=created_at%3Adesc"
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)

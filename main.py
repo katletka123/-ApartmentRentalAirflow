@@ -21,4 +21,5 @@ database_functions.execute_many(silver_functions.insert_silver_table, silver_dat
 gold_functions.price_per_m2_and_area(gold_functions.area_and_price_per_m2)
 
 gold_functions.negotiate(gold_functions.negotiation)
+gold_functions.avg_price_per_m2_district(gold_functions.select_from_silver)
 #аирфлоу>>забрать с сайта>>роу таблица>>cильвер таблица
