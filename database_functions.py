@@ -33,7 +33,8 @@ create_silver_table= """
         date VARCHAR(100),
         price_zl NUMERIC,
         area_m2  NUMERIC,
-        ready_to_negotiate BOOLEAN
+        ready_to_negotiate BOOLEAN,
+        link TEXT
     );
     """
 

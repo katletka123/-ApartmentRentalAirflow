@@ -8,13 +8,14 @@ select_from_raw="""
 """
 
 insert_silver_table="""
-        INSERT INTO silver_apartments (id, district, date, price_zl, area_m2, ready_to_negotiate)
+        INSERT INTO silver_apartments (id, district, date, price_zl, area_m2, ready_to_negotiate, link)
         VALUES (
             %(silver_id)s,
             %(silver_district)s, 
             %(silver_date)s, %(silver_price)s, 
             %(silver_area)s, 
-            %(ready_to_negotiate)s
+            %(ready_to_negotiate)s,
+            %(link)s
             )
         ON CONFLICT (id) DO
         UPDATE SET
@@ -22,7 +23,8 @@ insert_silver_table="""
             date=EXCLUDED.date,
             price_zl=EXCLUDED.price_zl,
             area_m2=EXCLUDED.area_m2,
-            ready_to_negotiate=EXCLUDED.ready_to_negotiate;
+            ready_to_negotiate=EXCLUDED.ready_to_negotiate,
+            link=EXCLUDED.link;
             """
 
 def price_and_negotiable_generate(raw_price):
@@ -90,13 +92,15 @@ def raw_transform_to_silver(raw_data):
         price, negotiable = price_and_negotiable_generate(data[2])
         tmp_area=data[3].split(' ')
         area=tmp_area[0].replace(',','.')
+        link=data[5]
         silver_data_dict = {
             'silver_id': silver_id,
             'silver_district': silver_district,
             'silver_date': silver_date,
             'silver_price': price,
             'silver_area': area,
-            'ready_to_negotiate': negotiable
+            'ready_to_negotiate': negotiable,
+            'link':link
         }
         silver_data_list_tmp.append(silver_data_dict)
         prices=[silver_data_dict["silver_price"] for silver_data_dict in silver_data_list_tmp]
