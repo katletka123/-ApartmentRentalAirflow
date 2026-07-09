@@ -5,18 +5,20 @@ from bs4 import BeautifulSoup
 from silver_functions import date_district_separate
 
 insert_raw_table="""
-        INSERT INTO raw_apartments (id, date_and_district, price, area)
+        INSERT INTO raw_apartments (id, date_and_district, price, area, link)
         VALUES (
                    %(raw_id)s,
                    %(raw_date_and_district)s,
                    %(raw_price)s, 
-                   %(raw_area)s
+                   %(raw_area)s,
+                   %(raw_link)s
                )
         ON CONFLICT (id) DO 
         UPDATE SET
             date_and_district=EXCLUDED.date_and_district,
             price=EXCLUDED.price,
-            area=EXCLUDED.area;
+            area=EXCLUDED.area,
+            link=EXCLUDED.link;
             """
 
 def is_new_box(box):
@@ -49,17 +51,19 @@ def get_new_boxes():
 def raw_list_generate(boxes):
     raw_data_list = []
     for box in boxes:
+        print(box.prettify())
         print("hello")
         id_num = box.get('id')
         raw_district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
         raw_price = box.find(attrs={'data-testid': 'ad-price'}).text
         raw_area = box.find(attrs={'color': 'text-global-secondary'}).text
-        # raw_href=box.find
+        raw_link=box.find("a")["href"]
         raw_data_dict = {
             'raw_id': id_num,
             'raw_date_and_district': raw_district_and_date_box,
             'raw_price': raw_price,
-            'raw_area': raw_area
+            'raw_area': raw_area,
+            'raw_link': raw_link
         }
         raw_data_list.append(raw_data_dict)
     return raw_data_list

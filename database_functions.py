@@ -21,6 +21,7 @@ create_raw_table="""
         date_and_district VARCHAR(100),
         price VARCHAR(100),
         area  VARCHAR(100),
+        link  TEXT,
         ingestion_date DATE DEFAULT CURRENT_DATE
     );
     """

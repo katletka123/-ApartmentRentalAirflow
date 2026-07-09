@@ -1,6 +1,5 @@
 from datetime import datetime
 import re
-import numpy
 import numpy as np
 
 select_from_raw="""
