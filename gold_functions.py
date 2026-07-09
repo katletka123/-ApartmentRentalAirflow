@@ -183,5 +183,5 @@ def matrix(query):
     plt.savefig("price_district_matrix.png", dpi=150)
     plt.show()
 
-matrix(matrix_query)
+
 # avg_price_per_m2_district(select_from_silver)

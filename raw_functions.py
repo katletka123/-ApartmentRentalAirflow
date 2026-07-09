@@ -21,7 +21,12 @@ insert_raw_table="""
 
 def is_new_box(box):
     district_and_date_box=box.find(attrs={'data-testid': 'location-date'}).text
-    box_date=date_district_separate(district_and_date_box)[1]
+    result = date_district_separate(district_and_date_box)
+    if result is None:
+        return False
+    else:
+        box_date=result[1]
+
     if box_date==YESTERDAY:
         return True
     else:
@@ -49,7 +54,7 @@ def raw_list_generate(boxes):
         raw_district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
         raw_price = box.find(attrs={'data-testid': 'ad-price'}).text
         raw_area = box.find(attrs={'color': 'text-global-secondary'}).text
-
+        # raw_href=box.find
         raw_data_dict = {
             'raw_id': id_num,
             'raw_date_and_district': raw_district_and_date_box,

@@ -75,7 +75,7 @@ def date_district_separate(date_and_district):
     if len(tmp_district) > 1:
         silver_district = tmp_district[1]
     else:
-        silver_district = "unknown"
+        return None
     silver_date = date_generate(tmp_district_and_date[1])
     return silver_district, silver_date
 
@@ -84,7 +84,10 @@ def raw_transform_to_silver(raw_data):
     silver_data_list = []
     for data in raw_data:
         silver_id=data[0]
-        silver_district, silver_date=date_district_separate(data[1])
+        result = date_district_separate(data[1])
+        if result is None:
+            continue
+        silver_district, silver_date = result
         price, negotiable = price_and_negotiable_generate(data[2])
         tmp_area=data[3].split(' ')
         area=tmp_area[0].replace(',','.')
