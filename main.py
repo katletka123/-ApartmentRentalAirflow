@@ -1,25 +1,24 @@
-import silver_functions
-import raw_functions
-import database_functions
-import gold_functions
+from silver_functions import select_from_raw,raw_transform_to_silver,insert_silver_table
+from raw_functions import get_new_boxes, raw_list_generate, insert_raw_table
+from database_functions import execute_commit, execute_many, execute_fethall, create_raw_table, create_silver_table
+from gold_functions import price_per_m2_and_area,area_and_price_per_m2, negotiation, negotiate, avg_price_per_m2_district,select_from_silver, matrix, matrix_query
 
-database_functions.execute_commit(database_functions.create_raw_table)
-database_functions.execute_commit(database_functions.create_silver_table)
+execute_commit(create_raw_table)
+execute_commit(create_silver_table)
 
-boxes= raw_functions.get_new_boxes()
+boxes= get_new_boxes()
 
-raw_data_list= raw_functions.raw_list_generate(boxes)
+raw_data_list= raw_list_generate(boxes)
+execute_many(insert_raw_table, raw_data_list)
 
-database_functions.execute_many(raw_functions.insert_raw_table, raw_data_list)
+data_from_raw = execute_fethall(select_from_raw)
 
-data_from_raw = database_functions.execute_fethall(silver_functions.select_from_raw)
+silver_data_list= raw_transform_to_silver(data_from_raw)
 
-silver_data_list= silver_functions.raw_transform_to_silver(data_from_raw)
+execute_many(insert_silver_table, silver_data_list)
 
-database_functions.execute_many(silver_functions.insert_silver_table, silver_data_list)
-
-gold_functions.price_per_m2_and_area(gold_functions.area_and_price_per_m2)
-gold_functions.negotiate(gold_functions.negotiation)
-gold_functions.avg_price_per_m2_district(gold_functions.select_from_silver)
-gold_functions.matrix(gold_functions.matrix_query)
+price_per_m2_and_area(area_and_price_per_m2)
+negotiate(negotiation)
+avg_price_per_m2_district(select_from_silver)
+matrix(matrix_query)
 #аирфлоу>>забрать с сайта>>роу таблица>>cильвер таблица

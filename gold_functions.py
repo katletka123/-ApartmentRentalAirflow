@@ -1,6 +1,5 @@
 import psycopg2
 import matplotlib.pyplot as plt
-from pydantic import color
 from matplotlib.colors import LinearSegmentedColormap
 from database_functions import get_connection
 import numpy as np
@@ -19,10 +18,10 @@ select_from_silver="""
         SELECT district, price_zl/area_m2 AS price_per_m2
         FROM silver_apartments
     )
-    SELECT district, AVG(price_per_m2) as avg_price
+    SELECT district, AVG(price_per_m2) as avg_price_per_m2
     FROM tmp_table
     GROUP BY district
-    ORDER BY avg_price DESC;  
+    ORDER BY avg_price_per_m2 DESC;  
 """
 area_and_price_per_m2="""
     SELECT area_m2, price_zl/area_m2 AS price_per_m2
@@ -137,8 +136,6 @@ def matrix(query):
     cur=conn.cursor()
     cur.execute(query, (STEP, STEP))
     rows=cur.fetchall()
-    cur.close()
-    conn.close()
 
     price_buckets = sorted({row[0] for row in rows})
     districts = sorted({row[1] for row in rows})
@@ -180,8 +177,8 @@ def matrix(query):
 
     fig.colorbar(im, ax=ax, label="Количество объявлений")
     plt.tight_layout()
-    plt.savefig("price_district_matrix.png", dpi=150)
     plt.show()
-
+    cur.close()
+    conn.close()
 
 # avg_price_per_m2_district(select_from_silver)
