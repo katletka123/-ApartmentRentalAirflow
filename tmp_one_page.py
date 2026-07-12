@@ -46,5 +46,6 @@ def hohrah(boxes):
                 print(p.get_text(strip=True))
 
 
+
 boxes=get_new_boxes()
 hohrah(boxes)
