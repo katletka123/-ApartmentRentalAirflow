@@ -105,8 +105,9 @@ def raw_transform_to_silver(raw_data):
         silver_data_list_tmp.append(silver_data_dict)
         prices=[silver_data_dict["silver_price"] for silver_data_dict in silver_data_list_tmp]
         q_high=np.quantile(prices,0.95)
+        q_low=np.quantile(prices,0.05)
         silver_data_list=[
             silver_data_dict for silver_data_dict in silver_data_list_tmp
-            if silver_data_dict["silver_price"]<= q_high
+            if q_low<=silver_data_dict["silver_price"]<= q_high
         ]
     return silver_data_list
