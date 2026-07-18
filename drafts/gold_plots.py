@@ -74,7 +74,7 @@ def price_per_m2_and_area(query):
 
     cur.close()
     conn.close()
-
+price_per_m2_and_area(area_and_price_per_m2)
 def negotiate(query):
     conn=get_connection()
     cur=conn.cursor()

@@ -1,5 +1,7 @@
 from database_functions import execute_commit,execute_many,execute_fethall
 from silver_functions import select_from_raw
+import matplotlib.pyplot as plt
+from database_functions import get_connection
 
 create_gold_district_stats ="""
         CREATE TABLE IF NOT EXISTS gold_district_stats (
@@ -62,12 +64,48 @@ insert_gold_table_2="""
         )
         VALUES (%s, %s, %s, %s, %s)
             """
+tmp_select_toavg_price_date="""
+SELECT date, avg_price
+FROM gold_daily_market_stats
+"""
+# execute_commit(create_gold_district_stats)
+# execute_commit(create_gold_daily_market_stats)
+#
+# data_from_silver_1=execute_fethall(select_from_silver_1)
+# execute_many(insert_gold_table_1, data_from_silver_1)
+#
+# data_from_silver_2=execute_fethall(select_from_silver_2)
+# execute_many(insert_gold_table_2, data_from_silver_2)
 
-execute_commit(create_gold_district_stats)
-execute_commit(create_gold_daily_market_stats)
+def avg_price_date(query):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(query)
+    rows=cur.fetchall()
+    dates=[]
+    prices=[]
+    for row in rows:
+        dates.append(row[0])
+        prices.append(float(row[1]))
+    plt.figure(figsize=(10, 6))
+    plt.plot(
+        dates,
+        prices,
+        marker='o',
+        linestyle='-',
+        alpha=1,
+        color="#F6D3DB"
+    )
 
-data_from_silver_1=execute_fethall(select_from_silver_1)
-execute_many(insert_gold_table_1, data_from_silver_1)
+    plt.title("Цена за м² в зависимости от площади квартиры")
+    plt.xlabel("Площадь квартиры (м²)")
+    plt.ylabel("Цена за м² (PLN)")
 
-data_from_silver_2=execute_fethall(select_from_silver_2)
-execute_many(insert_gold_table_2, data_from_silver_2)
+    plt.grid(True)
+
+    plt.show()
+
+    cur.close()
+    conn.close()
+
+avg_price_date(tmp_select_toavg_price_date)
