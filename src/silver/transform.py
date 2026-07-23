@@ -34,7 +34,7 @@ def price_and_negotiable_generate(raw_price):
         negotiable=False
 
     tmp_price = re.findall(r"\d[\d\s,.]*", raw_price)
-    print(tmp_price)
+
     if tmp_price:
         price = float(
             tmp_price[0]
