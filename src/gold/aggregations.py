@@ -72,15 +72,17 @@ tmp_select_toavg_price_date="""
 SELECT date, avg_price
 FROM gold_daily_market_stats
 """
-# execute_commit(create_gold_district_stats)
-# execute_commit(create_gold_daily_market_stats)
-#
-# data_from_silver_1=execute_fethall(select_from_silver_1)
-# execute_many(insert_gold_table_1, data_from_silver_1)
-#
-data_from_silver_2=execute_fethall(select_from_silver_2)
-execute_many(insert_gold_table_2, data_from_silver_2)
+if __name__=="__main__":
+
+    # execute_commit(create_gold_district_stats)
+    # execute_commit(create_gold_daily_market_stats)
+    #
+    # data_from_silver_1=execute_fethall(select_from_silver_1)
+    # execute_many(insert_gold_table_1, data_from_silver_1)
+    #
+    data_from_silver_2=execute_fethall(select_from_silver_2)
+    execute_many(insert_gold_table_2, data_from_silver_2)
 
 
 
-avg_price_date(tmp_select_toavg_price_date)
+    avg_price_date(tmp_select_toavg_price_date)
