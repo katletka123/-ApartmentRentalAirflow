@@ -82,7 +82,6 @@ def get_new_boxes():
 def raw_list_generate(boxes):
     raw_data_list = []
     for box in boxes:
-        print("hello")
         id_num = box.get('id')
         raw_district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
         raw_price = box.find(attrs={'data-testid': 'ad-price'}).text
