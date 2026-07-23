@@ -1,7 +1,6 @@
-import psycopg2
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-from database_functions import get_connection
+from src.utils.database_functions import get_connection
 import numpy as np
 
 STEP= 1000
@@ -74,7 +73,7 @@ def price_per_m2_and_area(query):
 
     cur.close()
     conn.close()
-price_per_m2_and_area(area_and_price_per_m2)
+
 def negotiate(query):
     conn=get_connection()
     cur=conn.cursor()
@@ -181,4 +180,37 @@ def matrix(query):
     cur.close()
     conn.close()
 
+def avg_price_date(query):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(query)
+    rows=cur.fetchall()
+    dates=[]
+    prices=[]
+    for row in rows:
+        dates.append(row[0])
+        prices.append(float(row[1]))
+    print(dates)
+    print(prices)
+    plt.figure(figsize=(10, 6))
+    plt.plot(
+        dates,
+        prices,
+        marker='o',
+        linestyle='-',
+        alpha=1,
+        color="#F6D3DB"
+    )
+
+    plt.title("Цена за м² в зависимости от площади квартиры")
+    plt.xlabel("Площадь квартиры (м²)")
+    plt.ylabel("Цена за м² (PLN)")
+
+    plt.xticks(rotation=45)
+    plt.grid(True)
+
+    plt.show()
+
+    cur.close()
+    conn.close()
 # avg_price_per_m2_district(select_from_silver)

@@ -2,7 +2,7 @@ from datetime import datetime,timedelta
 YESTERDAY = datetime.today().date() - timedelta(days=1)
 import requests
 from bs4 import BeautifulSoup
-from silver_functions import date_district_separate
+from src.silver.transform import date_district_separate
 from urllib.parse import urljoin
 
 def is_new_box(box):
