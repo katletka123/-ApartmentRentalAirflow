@@ -77,7 +77,6 @@ def get_new_boxes():
         for box in boxes:
             if is_new_box(box):
                 new_boxes.append(box)
-                page+=1
     return new_boxes
 
 def raw_list_generate(boxes):

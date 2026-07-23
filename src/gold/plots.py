@@ -202,9 +202,9 @@ def avg_price_date(query):
         color="#F6D3DB"
     )
 
-    plt.title("Цена за м² в зависимости от площади квартиры")
-    plt.xlabel("Площадь квартиры (м²)")
-    plt.ylabel("Цена за м² (PLN)")
+    plt.title("Average apartment price by publication Date")
+    plt.xlabel("Publication date")
+    plt.ylabel("Apartment price")
 
     plt.xticks(rotation=45)
     plt.grid(True)
