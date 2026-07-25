@@ -31,23 +31,6 @@ def date_generate(raw_date):
             publication_date = datetime(year, month, day).date()
             return publication_date
 
-insert_raw_table="""
-        INSERT INTO raw_apartments (id, date_and_district, price, area, link)
-        VALUES (
-                   %(raw_id)s,
-                   %(raw_date_and_district)s,
-                   %(raw_price)s, 
-                   %(raw_area)s,
-                   %(raw_link)s
-               )
-        ON CONFLICT (id) DO 
-        UPDATE SET
-            date_and_district=EXCLUDED.date_and_district,
-            price=EXCLUDED.price,
-            area=EXCLUDED.area,
-            link=EXCLUDED.link;
-            """
-
 def date_separate(date_and_district):
     tmp_district_and_date = date_and_district.split(' - ')
     date = date_generate(tmp_district_and_date[1])

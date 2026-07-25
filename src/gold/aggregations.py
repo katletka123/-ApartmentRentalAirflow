@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from src.utils.database_functions import get_connection, execute_commit, execute_fethall, execute_many
-from plots import avg_price_date
+from plots import build_daily_average_price_chart
+
 create_gold_district_stats ="""
         CREATE TABLE IF NOT EXISTS gold_district_stats (
         district VARCHAR(100) PRIMARY KEY,
@@ -68,7 +69,8 @@ insert_gold_table_2="""
             avg_price_per_m2 = EXCLUDED.avg_price_per_m2,
             new_apartments_count = EXCLUDED.new_apartments_count;
             """
-tmp_select_toavg_price_date="""
+
+select_daily_average_price="""
 SELECT date, avg_price
 FROM gold_daily_market_stats
 """
@@ -85,4 +87,4 @@ if __name__=="__main__":
 
 
 
-    avg_price_date(tmp_select_toavg_price_date)
+    build_daily_average_price_chart(select_daily_average_price)

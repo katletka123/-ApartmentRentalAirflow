@@ -1,6 +1,7 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 
@@ -14,29 +15,14 @@ def get_connection():
     port=os.getenv("DB_PORT")
 )
 
+def load_sql(relative_path: str) -> str:
+    sql_path = Path(__file__).resolve().parent.parent / "source_queries" / relative_path
+    with open(sql_path, "r", encoding="utf-8") as file:
+        return file.read()
 
-create_raw_table="""
-        CREATE TABLE IF NOT EXISTS raw_apartments (
-        id INTEGER PRIMARY KEY,
-        date_and_district VARCHAR(100),
-        price VARCHAR(100),
-        area  VARCHAR(100),
-        link  TEXT,
-        ingestion_date DATE DEFAULT CURRENT_DATE
-    );
-    """
+create_raw_table = load_sql("raw/create_raw_table.sql")
 
-create_silver_table= """
-        CREATE TABLE IF NOT EXISTS silver_apartments (
-        id INTEGER PRIMARY KEY,
-        district VARCHAR(100) NOT NULL,
-        date VARCHAR(100),
-        price_zl NUMERIC,
-        area_m2  NUMERIC,
-        ready_to_negotiate BOOLEAN,
-        link TEXT
-    );
-    """
+create_silver_table= load_sql("silver/create_silver_table.sql")
 
 conn =get_connection()
 
@@ -58,4 +44,5 @@ def execute_fethall(query):
         cursor.execute(query)
         data_from_raw = cursor.fetchall()
     return data_from_raw
+
 

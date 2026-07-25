@@ -5,14 +5,7 @@ import numpy as np
 
 STEP= 1000
 
-matrix_query="""
-    SELECT (FLOOR(price_zl / %s) * %s)::int AS price_bucket,
-            district, COUNT(*) as count
-    FROM silver_apartments
-    GROUP BY price_bucket, district
-    ORDER BY price_bucket, district;
-"""
-select_from_silver="""
+select_district_average_price_per_m2_bar_chart_data= """
     WITH tmp_table AS(
         SELECT district, price_zl/area_m2 AS price_per_m2
         FROM silver_apartments
@@ -22,19 +15,19 @@ select_from_silver="""
     GROUP BY district
     ORDER BY avg_price_per_m2 DESC;  
 """
-area_and_price_per_m2="""
+select_area_and_price_per_m2_plot_data= """
     SELECT area_m2, price_zl/area_m2 AS price_per_m2
     FROM silver_apartments
     WHERE area_m2 IS NOT NULL
         AND price_zl IS NOT NULL
         AND area_m2>0;
 """
-negotiation="""
+select_negotiation_plot_data= """
     SELECT ready_to_negotiate, COUNT(*)
     FROM silver_apartments
     GROUP BY ready_to_negotiate;
 """
-def price_per_m2_and_area(query):
+def build_price_per_m2_and_area_plot(query):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(query)
@@ -74,7 +67,7 @@ def price_per_m2_and_area(query):
     cur.close()
     conn.close()
 
-def negotiate(query):
+def build_negotiate_pie_chart(query):
     conn=get_connection()
     cur=conn.cursor()
     cur.execute(query)
@@ -105,7 +98,7 @@ def negotiate(query):
     cur.close()
     conn.close()
 
-def avg_price_per_m2_district(query):
+def build_avg_price_per_m2_district_bar_chart(query):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(query)
@@ -130,7 +123,7 @@ def avg_price_per_m2_district(query):
     cur.close()
     conn.close()
 
-def matrix(query):
+def build_district_price_heatmap(query):
     conn=get_connection()
     cur=conn.cursor()
     cur.execute(query, (STEP, STEP))
@@ -180,7 +173,7 @@ def matrix(query):
     cur.close()
     conn.close()
 
-def avg_price_date(query):
+def build_daily_average_price_chart(query):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(query)
