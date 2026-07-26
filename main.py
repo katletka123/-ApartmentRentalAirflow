@@ -34,4 +34,3 @@ build_avg_price_per_m2_district_bar_chart(select_district_average_price_per_m2_b
 select_district_price_heatmap_data = load_sql("gold/select_district_price_heatmap_data.sql")
 build_district_price_heatmap(select_district_price_heatmap_data)
 
-#аирфлоу>>забрать с сайта>>роу таблица>>cильвер таблица
