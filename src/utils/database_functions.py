@@ -20,9 +20,9 @@ def load_sql(relative_path: str) -> str:
     with open(sql_path, "r", encoding="utf-8") as file:
         return file.read()
 
-create_raw_table = load_sql("raw/create_raw_table.sql")
+create_raw_table = load_sql("raw/create_raw_table_query.sql")
 
-create_silver_table= load_sql("silver/create_silver_table.sql")
+create_silver_table= load_sql("silver/create_silver_table_query.sql")
 
 conn =get_connection()
 
