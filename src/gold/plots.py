@@ -1,17 +1,18 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 from src.utils.database_functions import get_connection
-import numpy as np
 
-STEP= 1000
+
+STEP = 1000
 
 def build_price_per_m2_and_area_plot(query):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(query)
-    rows=cur.fetchall()
-    areas=[]
-    prices_per_m2=[]
+    rows = cur.fetchall()
+    areas = []
+    prices_per_m2 = []
     for row in rows:
         areas.append(float(row[0]))
         prices_per_m2.append(float(row[1]))
@@ -19,8 +20,8 @@ def build_price_per_m2_and_area_plot(query):
     plt.scatter(
         areas,
         prices_per_m2,
-        alpha=1,
-        color="#F6D3DB"
+        alpha = 1,
+        color = "#F6D3DB"
     )
     k, b = np.polyfit(areas, prices_per_m2, 1)
 
@@ -46,12 +47,12 @@ def build_price_per_m2_and_area_plot(query):
     conn.close()
 
 def build_negotiate_pie_chart(query):
-    conn=get_connection()
-    cur=conn.cursor()
+    conn = get_connection()
+    cur = conn.cursor()
     cur.execute(query)
-    rows=cur.fetchall()
+    rows = cur.fetchall()
     labels = []
-    values=[]
+    values = []
     for negotiation, count in rows:
         if negotiation is True:
             labels.append("Yes")
@@ -62,10 +63,10 @@ def build_negotiate_pie_chart(query):
 
     plt.pie(
         values,
-        labels=labels,
-        autopct="%1.1f%%",
-        startangle=90,
-        colors=("#F6D3DB", "#BDB9B5")
+        labels = labels,
+        autopct = "%1.1f%%",
+        startangle = 90,
+        colors = ("#F6D3DB", "#BDB9B5")
     )
 
     plt.title("Ready to negotiate")
@@ -82,17 +83,17 @@ def build_avg_price_per_m2_district_bar_chart(query):
     cur.execute(query)
     rows = cur.fetchall()
 
-    districts=[]
-    prices=[]
+    districts = []
+    prices = []
     for row in rows:
         districts.append(row[0])
         prices.append(row[1])
     plt.bar(
         districts,
         prices,
-        color="#F6D3DB"
+        color = "#F6D3DB"
     )
-    plt.xticks(rotation=45, ha='right')
+    plt.xticks(rotation = 45, ha = 'right')
     plt.tight_layout()
     plt.title("AVG price per m2 for districts")
     plt.xlabel("district")
@@ -102,10 +103,10 @@ def build_avg_price_per_m2_district_bar_chart(query):
     conn.close()
 
 def build_district_price_heatmap(query):
-    conn=get_connection()
-    cur=conn.cursor()
+    conn = get_connection()
+    cur = conn.cursor()
     cur.execute(query, (STEP, STEP))
-    rows=cur.fetchall()
+    rows = cur.fetchall()
 
     price_buckets = sorted({row[0] for row in rows})
     districts = sorted({row[1] for row in rows})
@@ -141,11 +142,11 @@ def build_district_price_heatmap(query):
         for j in range(len(districts)):
             value = matrix[i][j]
             if value > 0:
-                ax.text(j, i, value, ha="center", va="center",
-                        color="black" if value < max_val * 0.6 else "white",
-                        fontsize=9)
+                ax.text(j, i, value, ha = "center", va = "center",
+                        color = "black" if value < max_val * 0.6 else "white",
+                        fontsize = 9)
 
-    fig.colorbar(im, ax=ax, label="Количество объявлений")
+    fig.colorbar(im, ax = ax, label = "Количество объявлений")
     plt.tight_layout()
     plt.show()
     cur.close()
@@ -155,22 +156,22 @@ def build_daily_average_price_chart(query):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(query)
-    rows=cur.fetchall()
-    dates=[]
-    prices=[]
+    rows = cur.fetchall()
+    dates = []
+    prices = []
     for row in rows:
         dates.append(row[0])
         prices.append(float(row[1]))
     print(dates)
     print(prices)
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize = (10, 6))
     plt.plot(
         dates,
         prices,
-        marker='o',
-        linestyle='-',
-        alpha=1,
-        color="#F6D3DB"
+        marker = 'o',
+        linestyle = '-',
+        alpha = 1,
+        color = "#F6D3DB"
     )
 
     plt.title("Average apartment price by publication Date")

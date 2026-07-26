@@ -37,20 +37,20 @@ def date_separate(date_and_district):
     return date
 
 def is_new_box(box):
-    district_and_date_box=box.find(attrs={'data-testid': 'location-date'}).text
+    district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
     result = date_separate(district_and_date_box)
     if result is None:
         return False
     else:
-        box_date=result
+        box_date = result
 
-    if box_date==YESTERDAY:
+    if box_date == YESTERDAY:
         return True
     else:
         return False
 
 def get_new_boxes():
-    new_boxes=[]
+    new_boxes = []
     for page in range(1,26):
         url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={page}&search%5Border%5D=created_at%3Adesc"
         headers = {"User-Agent": "Mozilla/5.0"}
@@ -69,7 +69,7 @@ def raw_list_generate(boxes):
         raw_district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
         raw_price = box.find(attrs={'data-testid': 'ad-price'}).text
         raw_area = box.find(attrs={'color': 'text-global-secondary'}).text
-        raw_link=box.find("a")["href"]
+        raw_link = box.find("a")["href"]
         raw_data_dict = {
             'raw_id': id_num,
             'raw_date_and_district': raw_district_and_date_box,

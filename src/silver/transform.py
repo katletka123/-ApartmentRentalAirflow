@@ -1,13 +1,13 @@
-from datetime import datetime
 import re
 import numpy as np
+from datetime import datetime
 
 
 def price_and_negotiable_generate(raw_price):
     if "do negocjacji" in raw_price.lower():
-        negotiable=True
+        negotiable = True
     else:
-        negotiable=False
+        negotiable = False
 
     tmp_price = re.findall(r"\d[\d\s,.]*", raw_price)
 
@@ -66,9 +66,9 @@ def raw_transform_to_silver(raw_data):
             continue
         silver_district, silver_date = result
         price, negotiable = price_and_negotiable_generate(data[2])
-        tmp_area=data[3].split(' ')
-        area=tmp_area[0].replace(',','.')
-        link=data[5]
+        tmp_area = data[3].split(' ')
+        area = tmp_area[0].replace(',','.')
+        link = data[5]
         silver_data_dict = {
             'silver_id': silver_id,
             'silver_district': silver_district,
@@ -79,11 +79,11 @@ def raw_transform_to_silver(raw_data):
             'link':link
         }
         silver_data_list_tmp.append(silver_data_dict)
-        prices=[silver_data_dict["silver_price"] for silver_data_dict in silver_data_list_tmp]
-        q_high=np.quantile(prices,0.95)
-        q_low=np.quantile(prices,0.05)
-        silver_data_list=[
+        prices = [silver_data_dict["silver_price"] for silver_data_dict in silver_data_list_tmp]
+        q_high = np.quantile(prices,0.95)
+        q_low = np.quantile(prices,0.05)
+        silver_data_list = [
             silver_data_dict for silver_data_dict in silver_data_list_tmp
-            if q_low<=silver_data_dict["silver_price"]<= q_high
+            if q_low <= silver_data_dict["silver_price"] <= q_high
         ]
     return silver_data_list
