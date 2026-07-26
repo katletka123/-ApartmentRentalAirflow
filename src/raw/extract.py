@@ -1,8 +1,10 @@
-from datetime import datetime,timedelta
-YESTERDAY = datetime.today().date() - timedelta(days=1)
+import re
 import requests
 from bs4 import BeautifulSoup
-import re
+from datetime import datetime, timedelta
+
+
+YESTERDAY = datetime.today().date() - timedelta(days=1)
 
 def date_generate(raw_date):
     months = {
@@ -32,13 +34,13 @@ def date_generate(raw_date):
             return publication_date
 
 def date_separate(date_and_district):
-    tmp_district_and_date = date_and_district.split(' - ')
-    date = date_generate(tmp_district_and_date[1])
+    tmp_date_and_district = date_and_district.split(' - ')
+    date = date_generate(tmp_date_and_district[1])
     return date
 
 def is_new_box(box):
-    district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
-    result = date_separate(district_and_date_box)
+    date_and_district_box = box.find(attrs={'data-testid': 'location-date'}).text
+    result = date_separate(date_and_district_box)
     if result is None:
         return False
     else:
@@ -65,17 +67,17 @@ def get_new_boxes():
 def raw_list_generate(boxes):
     raw_data_list = []
     for box in boxes:
-        id_num = box.get('id')
-        raw_district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
-        raw_price = box.find(attrs={'data-testid': 'ad-price'}).text
-        raw_area = box.find(attrs={'color': 'text-global-secondary'}).text
-        raw_link = box.find("a")["href"]
+        id = box.get('id')
+        date_district_and_box = box.find(attrs={'data-testid': 'location-date'}).text
+        price = box.find(attrs={'data-testid': 'ad-price'}).text
+        area = box.find(attrs={'color': 'text-global-secondary'}).text
+        link = box.find("a")["href"]
         raw_data_dict = {
-            'raw_id': id_num,
-            'raw_date_and_district': raw_district_and_date_box,
-            'raw_price': raw_price,
-            'raw_area': raw_area,
-            'raw_link': raw_link
+            'id': id,
+            'date_and_district': date_district_and_box,
+            'price': price,
+            'area': area,
+            'link': link
         }
         raw_data_list.append(raw_data_dict)
     return raw_data_list
