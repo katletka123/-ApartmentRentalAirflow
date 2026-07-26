@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+
 from src.utils.database_functions import get_connection, execute_commit, execute_fethall, execute_many
 from plots import build_daily_average_price_chart
 
@@ -84,7 +84,4 @@ if __name__=="__main__":
     #
     data_from_silver_2=execute_fethall(select_from_silver_2)
     execute_many(insert_gold_table_2, data_from_silver_2)
-
-
-
     build_daily_average_price_chart(select_daily_average_price)

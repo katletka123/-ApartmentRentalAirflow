@@ -5,28 +5,6 @@ import numpy as np
 
 STEP= 1000
 
-select_district_average_price_per_m2_bar_chart_data= """
-    WITH tmp_table AS(
-        SELECT district, price_zl/area_m2 AS price_per_m2
-        FROM silver_apartments
-    )
-    SELECT district, AVG(price_per_m2) as avg_price_per_m2
-    FROM tmp_table
-    GROUP BY district
-    ORDER BY avg_price_per_m2 DESC;  
-"""
-select_area_and_price_per_m2_plot_data= """
-    SELECT area_m2, price_zl/area_m2 AS price_per_m2
-    FROM silver_apartments
-    WHERE area_m2 IS NOT NULL
-        AND price_zl IS NOT NULL
-        AND area_m2>0;
-"""
-select_negotiation_plot_data= """
-    SELECT ready_to_negotiate, COUNT(*)
-    FROM silver_apartments
-    GROUP BY ready_to_negotiate;
-"""
 def build_price_per_m2_and_area_plot(query):
     conn = get_connection()
     cur = conn.cursor()
@@ -206,4 +184,3 @@ def build_daily_average_price_chart(query):
 
     cur.close()
     conn.close()
-# avg_price_per_m2_district(select_from_silver)
