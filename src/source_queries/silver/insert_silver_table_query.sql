@@ -1,9 +1,10 @@
 INSERT INTO silver_apartments (id, district, date, price_zl, area_m2, ready_to_negotiate, link)
 VALUES (
-    %(silver_id)s,
-    %(silver_district)s,
-    %(silver_date)s, %(silver_price)s,
-    %(silver_area)s,
+    %(id)s,
+    %(district)s,
+    %(date)s,
+    %(price)s,
+    %(area)s,
     %(ready_to_negotiate)s,
     %(link)s
 )

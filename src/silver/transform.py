@@ -60,30 +60,30 @@ def raw_transform_to_silver(raw_data):
     silver_data_list_tmp = []
     silver_data_list = []
     for data in raw_data:
-        silver_id=data[0]
+        id=data[0]
         result = date_district_separate(data[1])
         if result is None:
             continue
-        silver_district, silver_date = result
+        district, date = result
         price, negotiable = price_and_negotiable_generate(data[2])
         tmp_area = data[3].split(' ')
         area = tmp_area[0].replace(',','.')
         link = data[5]
         silver_data_dict = {
-            'silver_id': silver_id,
-            'silver_district': silver_district,
-            'silver_date': silver_date,
-            'silver_price': price,
-            'silver_area': area,
+            'id': id,
+            'district': district,
+            'date': date,
+            'price': price,
+            'area': area,
             'ready_to_negotiate': negotiable,
             'link':link
         }
         silver_data_list_tmp.append(silver_data_dict)
-        prices = [silver_data_dict["silver_price"] for silver_data_dict in silver_data_list_tmp]
+        prices = [silver_data_dict["price"] for silver_data_dict in silver_data_list_tmp]
         q_high = np.quantile(prices,0.95)
         q_low = np.quantile(prices,0.05)
         silver_data_list = [
             silver_data_dict for silver_data_dict in silver_data_list_tmp
-            if q_low <= silver_data_dict["silver_price"] <= q_high
+            if q_low <= silver_data_dict["price"] <= q_high
         ]
     return silver_data_list
