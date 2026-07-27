@@ -1,7 +1,8 @@
 import re
+from datetime import datetime, timedelta
+
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
 
 
 YESTERDAY = datetime.today().date() - timedelta(days=1)
@@ -33,10 +34,12 @@ def date_generate(raw_date):
             publication_date = datetime(year, month, day).date()
             return publication_date
 
+
 def date_separate(date_and_district):
     district_date_parts = date_and_district.split(' - ')
     date = date_generate(district_date_parts[1])
     return date
+
 
 def is_new_box(box):
     district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
@@ -51,6 +54,7 @@ def is_new_box(box):
     else:
         return False
 
+
 def get_new_boxes():
     new_boxes = []
     for page in range(1,26):
@@ -63,6 +67,7 @@ def get_new_boxes():
             if is_new_box(box):
                 new_boxes.append(box)
     return new_boxes
+
 
 def raw_list_generate(boxes):
     raw_data_list = []
@@ -81,4 +86,3 @@ def raw_list_generate(boxes):
         }
         raw_data_list.append(raw_data_dict)
     return raw_data_list
-

@@ -1,6 +1,7 @@
 import re
-import numpy as np
 from datetime import datetime
+
+import numpy as np
 
 
 def price_and_negotiable_generate(raw_price):
@@ -18,6 +19,7 @@ def price_and_negotiable_generate(raw_price):
             .replace(",", ".")
         )
     return price, negotiable
+
 
 def date_generate(raw_date):
     months = {
@@ -46,6 +48,7 @@ def date_generate(raw_date):
             publication_date = datetime(year, month, day).date()
             return publication_date
 
+
 def date_district_separate(date_and_district):
     district_date_parts = date_and_district.split(' - ')
     district_parts = district_date_parts[0].split(',')
@@ -55,6 +58,7 @@ def date_district_separate(date_and_district):
         return None
     silver_date = date_generate(district_date_parts[1])
     return silver_district, silver_date
+
 
 def raw_transform_to_silver(raw_data):
     all_transformed_rows = []

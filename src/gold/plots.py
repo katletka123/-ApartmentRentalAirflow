@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
+
 from src.utils.database_functions import get_connection
 
 
@@ -46,6 +47,7 @@ def build_price_per_m2_and_area_plot(query):
     cur.close()
     conn.close()
 
+
 def build_negotiate_pie_chart(query):
     conn = get_connection()
     cur = conn.cursor()
@@ -77,6 +79,7 @@ def build_negotiate_pie_chart(query):
     cur.close()
     conn.close()
 
+
 def build_avg_price_per_m2_district_bar_chart(query):
     conn = get_connection()
     cur = conn.cursor()
@@ -101,6 +104,7 @@ def build_avg_price_per_m2_district_bar_chart(query):
     plt.show()
     cur.close()
     conn.close()
+
 
 def build_district_price_heatmap(query):
     conn = get_connection()
@@ -151,6 +155,7 @@ def build_district_price_heatmap(query):
     plt.show()
     cur.close()
     conn.close()
+
 
 def build_daily_average_price_chart(query):
     conn = get_connection()

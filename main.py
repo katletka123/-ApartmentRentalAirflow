@@ -1,8 +1,18 @@
 from src.silver.transform import raw_transform_to_silver
 from src.raw.extract import get_new_boxes, raw_list_generate
-from src.utils.database_functions import (execute_commit, execute_many, execute_fetchall, load_sql)
-from src.gold.plots import (build_price_per_m2_and_area_plot, build_negotiate_pie_chart,
-                            build_avg_price_per_m2_district_bar_chart, build_district_price_heatmap)
+from src.utils.database_functions import (
+    execute_commit,
+    execute_many,
+    execute_fetchall,
+    load_sql,
+)
+from src.gold.plots import (
+    build_price_per_m2_and_area_plot,
+    build_negotiate_pie_chart,
+    build_avg_price_per_m2_district_bar_chart,
+    build_district_price_heatmap,
+)
+
 
 create_raw_table = load_sql("raw/create_raw_table_query.sql")
 execute_commit(create_raw_table)
@@ -33,4 +43,3 @@ build_avg_price_per_m2_district_bar_chart(select_district_average_price_per_m2_b
 
 select_district_price_heatmap_data = load_sql("gold/select_district_price_heatmap_data.sql")
 build_district_price_heatmap(select_district_price_heatmap_data)
-
