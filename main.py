@@ -39,6 +39,7 @@ select_negotiation_plot_data = load_sql("gold/select_negotiation_plot_data.sql")
 build_negotiate_pie_chart(select_negotiation_plot_data)
 
 select_district_average_price_per_m2_bar_chart_data = load_sql("gold/select_district_average_price_per_m2_bar_chart_data.sql")
+
 build_avg_price_per_m2_district_bar_chart(select_district_average_price_per_m2_bar_chart_data)
 
 select_district_price_heatmap_data = load_sql("gold/select_district_price_heatmap_data.sql")
