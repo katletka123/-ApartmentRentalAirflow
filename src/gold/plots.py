@@ -2,16 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 
-from src.utils.database_functions import get_connection
+from src.utils.database_functions import execute_fetchall
 
 
 STEP = 1000
 
-def build_price_per_m2_and_area_plot(query):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(query)
-    rows = cur.fetchall()
+def build_price_per_m2_and_area_plot(query, conn):
+    rows = execute_fetchall(query, conn)
     areas = []
     prices_per_m2 = []
     for row in rows:
@@ -44,15 +41,9 @@ def build_price_per_m2_and_area_plot(query):
 
     plt.show()
 
-    cur.close()
-    conn.close()
 
-
-def build_negotiate_pie_chart(query):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(query)
-    rows = cur.fetchall()
+def build_negotiate_pie_chart(query, conn):
+    rows = execute_fetchall(query, conn)
     labels = []
     values = []
     for negotiation, count in rows:
@@ -76,15 +67,9 @@ def build_negotiate_pie_chart(query):
 
     plt.show()
 
-    cur.close()
-    conn.close()
 
-
-def build_avg_price_per_m2_district_bar_chart(query):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(query)
-    rows = cur.fetchall()
+def build_avg_price_per_m2_district_bar_chart(query, conn):
+    rows = execute_fetchall(query, conn)
 
     districts = []
     prices = []
@@ -102,15 +87,10 @@ def build_avg_price_per_m2_district_bar_chart(query):
     plt.xlabel("district")
     plt.ylabel("price zł")
     plt.show()
-    cur.close()
-    conn.close()
 
 
-def build_district_price_heatmap(query):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(query, (STEP, STEP))
-    rows = cur.fetchall()
+def build_district_price_heatmap(query, conn, params):
+    rows = execute_fetchall(query, conn, params)
 
     price_buckets = sorted({row[0] for row in rows})
     districts = sorted({row[1] for row in rows})
@@ -128,7 +108,7 @@ def build_district_price_heatmap(query):
     fig, ax = plt.subplots(figsize=(1.2 * len(districts) + 3, 0.5 * len(price_buckets) + 3))
 
     custom_cmap = LinearSegmentedColormap.from_list(
-        "pusheen", ["#fff0f5", "#ff69b4", "#c2185b"]
+        "pusheen_colour", ["#fff0f5", "#ff69b4", "#c2185b"]
     )
     im = ax.imshow(matrix, cmap=custom_cmap, aspect="auto")
 
@@ -153,15 +133,10 @@ def build_district_price_heatmap(query):
     fig.colorbar(im, ax = ax, label = "Количество объявлений")
     plt.tight_layout()
     plt.show()
-    cur.close()
-    conn.close()
 
 
-def build_daily_average_price_chart(query):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(query)
-    rows = cur.fetchall()
+def build_daily_average_price_chart(query, conn):
+    rows = execute_fetchall(query, conn)
     dates = []
     prices = []
     for row in rows:
@@ -187,6 +162,3 @@ def build_daily_average_price_chart(query):
     plt.grid(True)
 
     plt.show()
-
-    cur.close()
-    conn.close()

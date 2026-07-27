@@ -4,6 +4,7 @@ import numpy as np
 
 from src.utils.parsing_utils import date_generate
 
+
 def price_and_negotiable_generate(raw_price):
     if "do negocjacji" in raw_price.lower():
         negotiable = True

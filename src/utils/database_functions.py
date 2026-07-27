@@ -2,12 +2,14 @@ import os
 from pathlib import Path
 
 import psycopg2
+from psycopg2.extensions import connection as PgConnection
+
 from dotenv import load_dotenv
 
 
 load_dotenv()
 
-def get_connection():
+def get_connection() -> PgConnection:
     return psycopg2.connect(
     host=os.getenv("DB_HOST"),
     dbname=os.getenv("POSTGRES_DB"),
@@ -22,26 +24,22 @@ def load_sql(relative_path: str) -> str:
     with open(sql_path, "r", encoding="utf-8") as file:
         return file.read()
 
-conn = get_connection()
 
-
-def execute_many(query, data_list):
+def execute_many(query, data_list, conn):
     with conn.cursor() as cursor:
         cursor.executemany(
             query,
             data_list
         )
-    conn.commit()
 
 
-def execute_commit(query):
+def execute_commit(query, conn):
     with conn.cursor() as cursor:
         cursor.execute(query)
-    conn.commit()
 
 
-def execute_fetchall(query):
+def execute_fetchall(query, conn, params= None):
     with conn.cursor() as cursor:
-        cursor.execute(query)
-        data_from_raw = cursor.fetchall()
-    return data_from_raw
+        cursor.execute(query, params)
+        data = cursor.fetchall()
+    return data
