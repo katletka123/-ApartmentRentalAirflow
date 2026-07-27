@@ -34,13 +34,13 @@ def date_generate(raw_date):
             return publication_date
 
 def date_separate(date_and_district):
-    tmp_date_and_district = date_and_district.split(' - ')
-    date = date_generate(tmp_date_and_district[1])
+    district_date_parts = date_and_district.split(' - ')
+    date = date_generate(district_date_parts[1])
     return date
 
 def is_new_box(box):
-    date_and_district_box = box.find(attrs={'data-testid': 'location-date'}).text
-    result = date_separate(date_and_district_box)
+    district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
+    result = date_separate(district_and_date_box)
     if result is None:
         return False
     else:
@@ -68,13 +68,13 @@ def raw_list_generate(boxes):
     raw_data_list = []
     for box in boxes:
         id = box.get('id')
-        date_district_and_box = box.find(attrs={'data-testid': 'location-date'}).text
+        district_and_date_box = box.find(attrs={'data-testid': 'location-date'}).text
         price = box.find(attrs={'data-testid': 'ad-price'}).text
         area = box.find(attrs={'color': 'text-global-secondary'}).text
         link = box.find("a")["href"]
         raw_data_dict = {
             'id': id,
-            'date_and_district': date_district_and_box,
+            'district_and_date': district_and_date_box,
             'price': price,
             'area': area,
             'link': link

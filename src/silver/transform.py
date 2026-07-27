@@ -47,13 +47,13 @@ def date_generate(raw_date):
             return publication_date
 
 def date_district_separate(date_and_district):
-    tmp_district_and_date = date_and_district.split(' - ')
-    tmp_district = tmp_district_and_date[0].split(',')
+    district_date_parts = date_and_district.split(' - ')
+    tmp_district = district_date_parts[0].split(',')
     if len(tmp_district) > 1:
         silver_district = tmp_district[1]
     else:
         return None
-    silver_date = date_generate(tmp_district_and_date[1])
+    silver_date = date_generate(district_date_parts[1])
     return silver_district, silver_date
 
 def raw_transform_to_silver(raw_data):

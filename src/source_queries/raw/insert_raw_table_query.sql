@@ -1,14 +1,14 @@
-INSERT INTO raw_apartments (id, date_and_district, price, area, link)
+INSERT INTO raw_apartments (id, district_and_date, price, area, link)
 VALUES (
     %(id)s,
-    %(date_and_district)s,
+    %(district_and_date)s,
     %(price)s,
     %(area)s,
     %(link)s
 )
 ON CONFLICT (id) DO
 UPDATE SET
-    date_and_district=EXCLUDED.date_and_district,
+    district_and_date=EXCLUDED.district_and_date,
     price=EXCLUDED.price,
     area=EXCLUDED.area,
     link=EXCLUDED.link;
