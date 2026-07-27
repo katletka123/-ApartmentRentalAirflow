@@ -1,5 +1,5 @@
 
-from src.utils.database_functions import get_connection, execute_commit, execute_fethall, execute_many
+from src.utils.database_functions import get_connection, execute_commit, execute_fetchall, execute_many
 from plots import build_daily_average_price_chart
 
 create_gold_district_stats = """
@@ -82,6 +82,6 @@ if __name__=="__main__":
     # data_from_silver_1=execute_fethall(select_from_silver_1)
     # execute_many(insert_gold_table_1, data_from_silver_1)
     #
-    data_from_silver_2=execute_fethall(select_from_silver_2)
+    data_from_silver_2=execute_fetchall(select_from_silver_2)
     execute_many(insert_gold_table_2, data_from_silver_2)
     build_daily_average_price_chart(select_daily_average_price)
