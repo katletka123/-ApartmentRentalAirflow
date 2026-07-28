@@ -1,0 +1,2 @@
+SELECT date, avg_price
+FROM gold_daily_market_stats

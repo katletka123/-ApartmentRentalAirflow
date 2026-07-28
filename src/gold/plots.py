@@ -142,8 +142,6 @@ def build_daily_average_price_chart(query, conn):
     for row in rows:
         dates.append(row[0])
         prices.append(float(row[1]))
-    print(dates)
-    print(prices)
     plt.figure(figsize = (10, 6))
     plt.plot(
         dates,
@@ -158,7 +156,7 @@ def build_daily_average_price_chart(query, conn):
     plt.xlabel("Publication date")
     plt.ylabel("Apartment price")
 
-    plt.xticks(rotation=45)
+    plt.xticks(rotation = 45)
     plt.grid(True)
 
     plt.show()

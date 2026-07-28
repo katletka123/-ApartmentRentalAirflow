@@ -14,6 +14,7 @@ from src.gold.plots import (
     build_negotiate_pie_chart,
     build_avg_price_per_m2_district_bar_chart,
     build_district_price_heatmap,
+    build_daily_average_price_chart,
     STEP
 )
 
@@ -59,13 +60,24 @@ select_area_and_price_per_m2_plot_data = load_sql("gold/select_area_and_price_pe
 select_negotiation_plot_data = load_sql("gold/select_negotiation_plot_data.sql")
 select_district_average_price_per_m2_bar_chart_data = load_sql("gold/select_district_average_price_per_m2_bar_chart_data.sql")
 select_district_price_heatmap_data = load_sql("gold/select_district_price_heatmap_data.sql")
+select_daily_market_stats_data=load_sql("gold/select_daily_market_stats_from_silver.sql")
+insert_gold_daily_market_stats_data=load_sql("gold/insert_gold_daily_market_stats.sql")
+select_daily_average_price_data=load_sql("gold/select_daily_average_price.sql")
+create_daily_market_stats_data=load_sql("gold/create_gold_daily_market_stats.sql")
 with closing(get_connection()) as conn:
     try:
+
         build_price_per_m2_and_area_plot(select_area_and_price_per_m2_plot_data, conn)
         build_negotiate_pie_chart(select_negotiation_plot_data, conn)
         build_avg_price_per_m2_district_bar_chart(select_district_average_price_per_m2_bar_chart_data, conn)
         build_district_price_heatmap(select_district_price_heatmap_data, conn, (STEP, STEP))
+
+        execute_commit(create_daily_market_stats_data,conn)
+        daily_market_data = execute_fetchall(select_daily_market_stats_data,conn)
+        execute_many(insert_gold_daily_market_stats_data, daily_market_data,conn)
+        build_daily_average_price_chart(select_daily_average_price_data,conn)
         conn.commit()
+
     except Exception:
         conn.rollback()
         raise
