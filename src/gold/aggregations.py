@@ -22,7 +22,7 @@ create_gold_daily_market_stats = """
     );
     """
 
-select_from_silver_1 = """
+SELECT_DISTRICT_STATS_FROM_SILVER = """
 
         SELECT district, ROUND(AVG(price_zl),2) as avg_price,
                ROUND(AVG(area_m2),2) as avg_area,
@@ -32,7 +32,7 @@ select_from_silver_1 = """
         GROUP BY district
         ORDER BY avg_price_per_m2;
 """
-insert_gold_table_1 = """
+INSERT_GOLD_DISTRICT_STATS = """
         INSERT INTO gold_district_stats (
             district,
             avg_price,
@@ -43,17 +43,17 @@ insert_gold_table_1 = """
         VALUES (%s, %s, %s, %s, %s)
             """
 
-select_from_silver_2 = """
-    SELECT  date,
-            ROUND(AVG(price_zl),2) as avg_price,
-            ROUND(AVG(area_m2),2) as avg_area,
-            ROUND(AVG(price_zl/area_m2),2) as avg_price_per_m2,
-            COUNT(*) as new_apartments_count
-    FROM silver_apartments
-    GROUP BY date
-    ORDER BY date DESC;
+SELECT_DAILY_MARKET_STATS_FROM_SILVER = """
+        SELECT  date,
+                ROUND(AVG(price_zl),2) as avg_price,
+                ROUND(AVG(area_m2),2) as avg_area,
+                ROUND(AVG(price_zl/area_m2),2) as avg_price_per_m2,
+                COUNT(*) as new_apartments_count
+        FROM silver_apartments
+        GROUP BY date
+        ORDER BY date DESC;
 """
-insert_gold_table_2 = """
+INSERT_GOLD_DAILY_MARKET_STATS = """
         INSERT INTO gold_daily_market_stats (
             date,
             avg_price,
@@ -70,9 +70,9 @@ insert_gold_table_2 = """
             new_apartments_count = EXCLUDED.new_apartments_count;
             """
 
-select_daily_average_price = """
-SELECT date, avg_price
-FROM gold_daily_market_stats
+SELECT_DAILY_AVERAGE_PRICE = """
+        SELECT date, avg_price
+        FROM gold_daily_market_stats
 """
 if __name__=="__main__":
 
@@ -82,6 +82,6 @@ if __name__=="__main__":
     # data_from_silver_1=execute_fethall(select_from_silver_1)
     # execute_many(insert_gold_table_1, data_from_silver_1)
     #
-    data_from_silver_2=execute_fetchall(select_from_silver_2)
-    execute_many(insert_gold_table_2, data_from_silver_2)
-    build_daily_average_price_chart(select_daily_average_price)
+    data_from_silver_2=execute_fetchall(SELECT_DAILY_MARKET_STATS_FROM_SILVER)
+    execute_many(INSERT_GOLD_DAILY_MARKET_STATS, data_from_silver_2)
+    build_daily_average_price_chart(SELECT_DAILY_AVERAGE_PRICE)

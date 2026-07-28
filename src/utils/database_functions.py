@@ -38,7 +38,7 @@ def execute_commit(query, conn):
         cursor.execute(query)
 
 
-def execute_fetchall(query, conn, params= None):
+def execute_fetchall(query, conn, params = None):
     with conn.cursor() as cursor:
         cursor.execute(query, params)
         data = cursor.fetchall()
