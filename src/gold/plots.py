@@ -139,24 +139,48 @@ def build_daily_average_price_chart(query, conn):
     rows = execute_fetchall(query, conn)
     dates = []
     prices = []
+    counts = []
+    print(query)
+    print(rows[:3])
+    print(rows[-3:])
+
     for row in rows:
         dates.append(row[0])
         prices.append(float(row[1]))
-    plt.figure(figsize = (10, 6))
-    plt.plot(
+        counts.append(float(row[2]))
+
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+    ax1.plot(
         dates,
         prices,
-        marker = 'o',
-        linestyle = '-',
-        alpha = 1,
-        color = "#F6D3DB"
+        marker='o',
+        linestyle='-',
+        alpha=1,
+        color="#F6D3DB",
+        label='Average price'
     )
+    ax1.set_xlabel("Publication date")
+    ax1.set_ylabel("Apartment price")
+    ax1.tick_params(axis='y')
 
-    plt.title("Average apartment price by publication Date")
-    plt.xlabel("Publication date")
-    plt.ylabel("Apartment price")
+    ax2 = ax1.twinx()
+    ax2.bar(
+        dates,
+        counts,
+        alpha=0.3,
+        color="#BDB9B5",
+        label="New apartments count"
+    )
+    ax2.set_ylabel("New apartments count")
+    ax2.tick_params(axis='y')
 
-    plt.xticks(rotation = 45)
-    plt.grid(True)
+    plt.title("Average apartment price and new listings by publication date")
+    fig.autofmt_xdate(rotation=45)
+    ax1.grid(True, alpha=0.3)
 
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
+
+    fig.tight_layout()
     plt.show()
