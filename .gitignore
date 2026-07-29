@@ -6,4 +6,3 @@ __pycache__/
 drafts/
 airflow/logs/
 .DS_Store
-README.md
