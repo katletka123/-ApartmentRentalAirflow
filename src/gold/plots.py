@@ -140,9 +140,6 @@ def build_daily_average_price_chart(query, conn):
     dates = []
     prices = []
     counts = []
-    print(query)
-    print(rows[:3])
-    print(rows[-3:])
 
     for row in rows:
         dates.append(row[0])

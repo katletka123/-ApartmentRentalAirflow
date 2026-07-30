@@ -63,8 +63,18 @@ def raw_transform_to_silver(raw_data):
     q_high = np.quantile(prices,0.95)
     q_low = np.quantile(prices,0.05)
 
-    filtered_silver_data_list = [
+    filtered_price_silver_data_list = [
         silver_data_dict for silver_data_dict in all_transformed_rows
         if q_low <= silver_data_dict["price"] <= q_high
     ]
-    return filtered_silver_data_list
+
+    areas = [row["area"] for row in filtered_price_silver_data_list]
+    q_high_area = np.quantile(areas, 0.95)
+    q_low_area = np.quantile(areas, 0.05)
+
+    filtered_area_and_price_silver_data_list = [
+        row for row in filtered_price_silver_data_list
+        if q_low_area <= row["area"] <= q_high_area
+    ]
+
+    return filtered_area_and_price_silver_data_list
