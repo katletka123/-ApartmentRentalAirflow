@@ -135,3 +135,4 @@ websockets==16.0
 wirerope==1.0.0
 wrapt==2.2.2
 zipp==4.1.0
+pre-commit==4.6.1

@@ -3,11 +3,13 @@ import datetime
 from airflow.sdk import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 
+
 def fun1():
-    print('hello fun 1')
+    print("hello fun 1")
+
 
 def fun2():
-    print('hello fun 2')
+    print("hello fun 2")
 
 
 my_dag = DAG(

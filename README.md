@@ -7,7 +7,7 @@ Apartment Rental ETL Pipeline
 </h1>
 
 <p align="center">
-ETL pipeline for collecting, processing and analyzing apartment rental listings from OLX 
+ETL pipeline for collecting, processing and analyzing apartment rental listings from OLX
 </p>
 
 
@@ -50,7 +50,7 @@ The project demonstrates practical Data Engineering skills, including:
 #  Architecture
 
 ```text
-                        OLX 
+                        OLX
                          │
                          ▼
                 Requests + BeautifulSoup
@@ -102,32 +102,32 @@ Analytics task
 ```text
 │
 ├── airflow/
-│   ├── config/                
-│   ├── dags/                  
-│   ├── logs/                  
-│   ├── plugins/                
-│   └── docker-compose.yaml   
+│   ├── config/
+│   ├── dags/
+│   ├── logs/
+│   ├── plugins/
+│   └── docker-compose.yaml
 │
 ├── src/
 │   ├── raw/
-│   │   └── extract.py        
+│   │   └── extract.py
 │   │
 │   ├── silver/
-│   │   └── transform.py       
+│   │   └── transform.py
 │   │
 │   ├── gold/
-│   │   └── plots.py            
+│   │   └── plots.py
 │   │
 │   ├── source_queries/
-│   │   ├── raw/               
-│   │   ├── silver/          
-│   │   └── gold/           
+│   │   ├── raw/
+│   │   ├── silver/
+│   │   └── gold/
 │   │
 │   └── utils/
 │       ├── database_functions.py
 │       └── parsing_utils.py
-│              
-├── main.py                 
+│
+├── main.py
 ├── requirements.txt
 └── README.md
 ```
