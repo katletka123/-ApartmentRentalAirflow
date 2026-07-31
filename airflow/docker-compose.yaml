@@ -334,14 +334,14 @@ services:
         condition: service_completed_successfully
 
   postgres-app:
-      image: postgres:16
-      restart: always
-      env_file:
-        - ${ENV_FILE_PATH:-../.env}
-      ports:
-        - "5433:5432"
-      volumes:
-        - postgres_data:/var/lib/postgresql/data
+    image: postgres:16
+    restart: always
+    env_file:
+      - ${ENV_FILE_PATH:-../.env}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres-db-volume:
