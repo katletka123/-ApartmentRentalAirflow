@@ -1,24 +1,29 @@
-import datetime
+from airflow.decorators import dag, task
+import pendulum
 
-from airflow.sdk import DAG
-from airflow.providers.standard.operators.python import PythonOperator
-
-
-def fun1():
-    print("hello fun 1")
+local_tz = pendulum.timezone("Europe/Warsaw")
 
 
-def fun2():
-    print("hello fun 2")
-
-
-my_dag = DAG(
-    dag_id="my_dag_name",
-    start_date=datetime.datetime(2021, 1, 1),
-    schedule="* * * * *",
+@dag(
+    schedule="10 0 * * *",
+    start_date=pendulum.datetime(2026, 1, 1, tz=local_tz),
+    catchup=False,
+    tags=["example"],
 )
+def my_first_dag():
+    @task
+    def extract():
+        return {"data": 42}
 
-task1 = PythonOperator(task_id="task1", dag=my_dag, python_callable=fun1)
-task2 = PythonOperator(task_id="task2", dag=my_dag, python_callable=fun2)
+    @task
+    def transform(data: dict):
+        return data["data"] * 2
 
-task1 >> task2
+    @task
+    def load(value):
+        print(f"Loaded value: {value}")
+
+    load(transform(extract()))
+
+
+my_first_dag()

@@ -1,3 +1,6 @@
+import time
+import random
+
 from datetime import datetime, timedelta
 
 import requests
@@ -39,6 +42,8 @@ def get_new_boxes():
         for box in boxes:
             if is_new_box(box):
                 new_boxes.append(box)
+        time.sleep(random.randint(1, 10))
+        print("hello cat")
     return new_boxes
 
 

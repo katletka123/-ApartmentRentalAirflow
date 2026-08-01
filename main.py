@@ -29,6 +29,7 @@ def with_db_connection(func):
             except Exception:
                 conn.rollback()
                 raise
+
     return wrapper
 
 
@@ -87,9 +88,7 @@ def build_gold_plots(conn):
     build_avg_price_per_m2_district_bar_chart(
         select_district_average_price_per_m2_bar_chart_data, conn
     )
-    build_district_price_heatmap(
-        select_district_price_heatmap_data, conn, (STEP, STEP)
-    )
+    build_district_price_heatmap(select_district_price_heatmap_data, conn, (STEP, STEP))
     build_daily_average_price_chart(select_daily_average_price_data, conn)
 
 
