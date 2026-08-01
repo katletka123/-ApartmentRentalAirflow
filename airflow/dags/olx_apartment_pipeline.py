@@ -3,7 +3,7 @@ import inspect
 from contextlib import closing
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
 
 from src.silver.transform import raw_transform_to_silver
@@ -104,10 +104,14 @@ def build_gold_plots(conn):
     build_daily_average_price_chart(select_daily_average_price_data, conn)
 
 
+def task_failure_alert(context):
+    task_id = context["task_instance"].task_id
+    print(f"Task {task_id} failed")
+
+
 default_args = {
     "owner": "katletka",
-    "retries": 2,
-    "retry_delay": timedelta(minutes=5),
+    "on_failure_callback": task_failure_alert,
 }
 
 
