@@ -149,15 +149,6 @@ with DAG(
         python_callable=build_gold_plots,
     )
 
-
-
-
-
-
-
-
-
-
     (
         create_tables_task
         >> load_raw_data_task
