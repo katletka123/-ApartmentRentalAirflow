@@ -47,6 +47,21 @@ The project demonstrates practical Data Engineering skills, including:
 
 ---
 
+# Tech Stack
+
+| Category | Technologies               |
+|------------|----------------------------|
+| Language | Python                     |
+| Database | PostgreSQL                 |
+| Orchestration | Apache Airflow             |
+| Containers | Docker                     |
+| Scraping | BeautifulSoup and Requests |
+| Visualization | Matplotlib                 |
+| Version Control | Git & GitHub               |
+
+---
+
+
 #  Architecture
 
 ```text
@@ -254,22 +269,6 @@ The pipeline generates:
 
 ---
 
-# Tech Stack
-
-| Category | Technologies               |
-|------------|----------------------------|
-| Language | Python                     |
-| Database | PostgreSQL                 |
-| Orchestration | Apache Airflow             |
-| Containers | Docker                     |
-| Scraping | BeautifulSoup and Requests |
-| Visualization | Matplotlib                 |
-| Version Control | Git & GitHub               |
-
----
-
 # Author
 
 **Anastasiya Kazlova**
-
-Data Engineering Portfolio Project

@@ -8,7 +8,9 @@ from bs4 import BeautifulSoup
 
 from src.utils.parsing_utils import date_generate
 
+
 YESTERDAY = datetime.today().date() - timedelta(days=1)
+PAGE_COUNT = 26
 
 
 def date_separate(date_and_district):
@@ -33,7 +35,7 @@ def is_new_box(box):
 
 def get_new_boxes():
     new_boxes = []
-    for page in range(1, 26):
+    for page in range(1, PAGE_COUNT):
         url = f"https://www.olx.pl/nieruchomosci/mieszkania/wynajem/warszawa/?page={page}&search%5Border%5D=created_at%3Adesc"
         headers = {"User-Agent": "Mozilla/5.0"}
         response = requests.get(url, headers=headers)
