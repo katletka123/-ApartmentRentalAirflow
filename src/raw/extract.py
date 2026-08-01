@@ -10,7 +10,7 @@ from src.utils.parsing_utils import date_generate
 
 
 YESTERDAY = datetime.today().date() - timedelta(days=1)
-PAGE_COUNT = 3
+PAGE_COUNT = 26
 
 
 def date_separate(date_and_district):
@@ -45,7 +45,6 @@ def get_new_boxes():
             if is_new_box(box):
                 new_boxes.append(box)
         time.sleep(random.randint(1, 10))
-        print("hello cat")
     return new_boxes
 
 

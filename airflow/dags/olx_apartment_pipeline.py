@@ -105,8 +105,8 @@ def build_gold_plots(conn):
 
 
 def task_failure_alert(context):
-    task_id = context["task_instance"].task_id
-    print(f"Task {task_id} failed")
+    # task_id = context["task_instance"].task_id
+    print("To-do implement failure handling")
 
 
 default_args = {
