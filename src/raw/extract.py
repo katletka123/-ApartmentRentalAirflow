@@ -10,7 +10,7 @@ from src.utils.parsing_utils import date_generate
 
 
 YESTERDAY = datetime.today().date() - timedelta(days=1)
-PAGE_COUNT = 26
+PAGE_COUNT = 3
 
 
 def date_separate(date_and_district):

@@ -1,3 +1,6 @@
+import os
+from datetime import datetime
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
@@ -6,6 +9,14 @@ from src.utils.database_functions import execute_fetchall
 
 
 STEP = 1000
+REPORTS_BASE_DIR = "/opt/airflow/reports"
+
+
+def _get_reports_dir():
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    reports_dir = os.path.join(REPORTS_BASE_DIR, date_str)
+    os.makedirs(reports_dir, exist_ok=True)
+    return reports_dir
 
 
 def build_price_per_m2_and_area_plot(query, conn):
@@ -29,7 +40,9 @@ def build_price_per_m2_and_area_plot(query, conn):
 
     plt.grid(True)
 
-    plt.show()
+    filepath = os.path.join(_get_reports_dir(), "price_per_m2_and_area.png")
+    plt.savefig(filepath, dpi=150, bbox_inches="tight")
+    plt.close()
 
 
 def build_negotiate_pie_chart(query, conn):
@@ -55,7 +68,9 @@ def build_negotiate_pie_chart(query, conn):
     plt.title("Ready to negotiate")
     plt.axis("equal")
 
-    plt.show()
+    filepath = os.path.join(_get_reports_dir(), "negotiate_pie_chart.png")
+    plt.savefig(filepath, dpi=150, bbox_inches="tight")
+    plt.close()
 
 
 def build_avg_price_per_m2_district_bar_chart(query, conn):
@@ -72,7 +87,12 @@ def build_avg_price_per_m2_district_bar_chart(query, conn):
     plt.title("AVG price per m2 for districts")
     plt.xlabel("district")
     plt.ylabel("price zł")
-    plt.show()
+
+    filepath = os.path.join(
+        _get_reports_dir(), "avg_price_per_m2_district_bar_chart.png"
+    )
+    plt.savefig(filepath, dpi=150, bbox_inches="tight")
+    plt.close()
 
 
 def build_district_price_heatmap(query, conn, params):
@@ -105,9 +125,9 @@ def build_district_price_heatmap(query, conn, params):
     ax.set_yticks(range(len(price_buckets)))
     ax.set_yticklabels(labels)
 
-    ax.set_xlabel("Район")
-    ax.set_ylabel("Ценовой диапазон")
-    ax.set_title("Распределение объявлений об аренде: цена x район")
+    ax.set_xlabel("District")
+    ax.set_ylabel("Price range")
+    ax.set_title("Distribution of rental listings: price x district")
 
     max_val = max(max(row) for row in matrix) if matrix else 0
     for i in range(len(price_buckets)):
@@ -126,7 +146,10 @@ def build_district_price_heatmap(query, conn, params):
 
     fig.colorbar(im, ax=ax, label="Количество объявлений")
     plt.tight_layout()
-    plt.show()
+
+    filepath = os.path.join(_get_reports_dir(), "district_price_heatmap.png")
+    plt.savefig(filepath, dpi=150, bbox_inches="tight")
+    plt.close(fig)
 
 
 def build_daily_average_price_chart(query, conn):
@@ -168,4 +191,7 @@ def build_daily_average_price_chart(query, conn):
     ax1.legend(lines1 + lines2, labels1 + labels2, loc="upper left")
 
     fig.tight_layout()
-    plt.show()
+
+    filepath = os.path.join(_get_reports_dir(), "daily_average_price_chart.png")
+    plt.savefig(filepath, dpi=150, bbox_inches="tight")
+    plt.close(fig)

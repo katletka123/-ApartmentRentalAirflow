@@ -19,7 +19,7 @@ from src.gold.plots import (
 )
 
 
-def with_db_connection(func):
+def handle_connection(func):
     def wrapper(*args, **kwargs):
         with closing(get_connection()) as conn:
             try:
@@ -33,7 +33,7 @@ def with_db_connection(func):
     return wrapper
 
 
-@with_db_connection
+@handle_connection
 def create_tables(conn):
     create_raw_table = load_sql("raw/create_raw_table_query.sql")
     create_silver_table = load_sql("silver/create_silver_table_query.sql")
@@ -41,7 +41,7 @@ def create_tables(conn):
     execute_commit(create_silver_table, conn)
 
 
-@with_db_connection
+@handle_connection
 def load_raw_data(conn):
     boxes = get_new_boxes()
     raw_data_list = raw_list_generate(boxes)
@@ -49,7 +49,7 @@ def load_raw_data(conn):
     execute_many(insert_raw_table, raw_data_list, conn)
 
 
-@with_db_connection
+@handle_connection
 def transform_raw_to_silver(conn):
     select_from_raw = load_sql("silver/select_from_raw_query.sql")
     insert_silver_table = load_sql("silver/insert_silver_table_query.sql")
@@ -58,7 +58,7 @@ def transform_raw_to_silver(conn):
     execute_many(insert_silver_table, silver_data_list, conn)
 
 
-@with_db_connection
+@handle_connection
 def refresh_gold_daily_market_stats(conn):
     create_daily_market_stats = load_sql("gold/create_gold_daily_market_stats.sql")
     select_daily_market_stats = load_sql(
@@ -70,7 +70,7 @@ def refresh_gold_daily_market_stats(conn):
     execute_many(insert_gold_daily_market_stats, daily_market_data, conn)
 
 
-@with_db_connection
+@handle_connection
 def build_gold_plots(conn):
     select_area_and_price_per_m2_plot_data = load_sql(
         "gold/select_area_and_price_per_m2_plot_data.sql"
