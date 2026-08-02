@@ -164,14 +164,14 @@ Table: `raw_apartments`
 
 Stores original scraped OLX data before transformation
 
-| Column            | Description                                            |
-|-------------------|--------------------------------------------------------|
-| id                | Unique identifier of the apartment listing             |
-| district_and_date | Raw location and publication date field                |
-| price             | Raw apartment price                                    |
-| area              | Raw apartment area                                     |
-| ingestion_date    | Date and time when data was ingested into the pipeline |
-| link              | URL of the original apartment listing                  |
+| Column            | Description                                            | Data Types          |
+|-------------------|--------------------------------------------------------|---------------------|
+| id                | Unique identifier of the apartment listing             | INTEGER PRIMARY KEY |
+| district_and_date | Raw location and publication date field                | VARCHAR             |
+| price             | Raw apartment price                                    | VARCHAR             |
+| area              | Raw apartment area                                     | VARCHAR             |
+| ingestion_date    | Date and time when data was ingested into the pipeline | DATE                |
+| link              | URL of the original apartment listing                  | TEXT                |
 ---
 
 ## Silver
@@ -180,15 +180,15 @@ Table: `silver_apartments`
 
 Contains cleaned and standardized apartment information
 
-| Column              | Description                                |
-|---------------------|--------------------------------------------|
-| id                  | Unique identifier of the apartment listing |
-| district            | Apartment district                         |
-| date                | Publication date                           |
-| price_zl            | Apartment rental price in PLN              |
-| area_m2             | Area in square meters                      |
-| ready_to_negotiate  | Boolean flag                               |
-| link                | URL of the original apartment listing      |
+| Column              | Description                                | Data Types          |
+|---------------------|--------------------------------------------|---------------------|
+| id                  | Unique identifier of the apartment listing | INTEGER PRIMARY KEY |
+| district            | Apartment district                         | VARCHAR             |
+| date                | Publication date                           | VARCHAR             |
+| price_zl            | Apartment rental price in PLN              | NUMERIC             |
+| area_m2             | Area in square meters                      | NUMERIC             |
+| ready_to_negotiate  | Boolean flag                               | BOOLEAN             |
+| link                | URL of the original apartment listing      | TEXT                |
 
 ---
 
