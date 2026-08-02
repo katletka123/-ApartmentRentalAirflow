@@ -226,13 +226,27 @@ pip install -r requirements.txt
 
 3. Create `.env`
 
+Example .env values:
 ```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=my_db
-DB_USER=postgres
-DB_PASSWORD=password
+DB_HOST = localhost
+DB_PORT = 5432
+DB_NAME = my_db
+DB_USER = postgres
+DB_PASSWORD = password
+
+COMPOSE_PROJECT_NAME=airflow
+FERNET_KEY = generate using the command below
+AIRFLOW_UID = generate using the command below
 ```
+FERENT_KEY:
+```bash
+docker run --rm python:3.11-slim bash -c "pip install cryptography -q && python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\""
+```
+AIRFLOW_UID:
+```bash
+echo $(id -u)
+```
+
 
 # Running the Project
 
