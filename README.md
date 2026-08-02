@@ -1,7 +1,3 @@
-<!-- ========================= -->
-<!--           BADGES          -->
-<!-- ========================= -->
-
 <h1 align="center">
 Apartment Rental ETL Pipeline
 </h1>
@@ -16,13 +12,16 @@ ETL pipeline for collecting, processing and analyzing apartment rental listings 
 # Table of Contents
 
 - [Overview](#overview)
+- [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Workflow](#workflow)
 - [Project Structure](#project-structure)
 - [Database Layers](#database-layers)
 - [Installing](#installing)
 - [Running the Project](#running-the-project)
+- [Example Output](#example-output)
 - [Future Improvements](#future-improvements)
+- [Author](#author)
 
 ---
 
@@ -49,44 +48,44 @@ The project demonstrates practical Data Engineering skills, including:
 
 # Tech Stack
 
-| Category | Technologies               |
-|------------|----------------------------|
-| Language | Python                     |
-| Database | PostgreSQL                 |
-| Orchestration | Apache Airflow             |
-| Containers | Docker                     |
-| Scraping | BeautifulSoup and Requests |
-| Visualization | Matplotlib                 |
-| Version Control | Git & GitHub               |
-
+| Category        | Technologies                             |
+|-----------------|------------------------------------------|
+| Language        | Python                                   |
+| Database        | PostgreSQL                               |
+| Orchestration   | Apache Airflow                           |
+| Containers      | Docker                                   |
+| Scraping        | BeautifulSoup and Requests               |
+| Visualization   | Matplotlib                               |
+| Version Control | Git & GitHub                             |
+| CI/CD           | GitHub Actions (pre-commit checks on pr) |
 ---
 
 
 #  Architecture
 
 ```text
-                        OLX
-                         │
-                         ▼
-                Requests + BeautifulSoup
-                         │
-                         ▼
-                  PostgreSQL raw layer
-                         │
-                         ▼
-                 Python Transformation
-                         │
-                         ▼
-                 PostgreSQL silver layer
-                         │
-                         ▼
-                   SQL Aggregation
-                         │
-                         ▼
-                 PostgreSQL gold layer
-                         │
-                         ▼
-                  Matplotlib Analytics
+    OLX
+     │
+     ▼
+Requests + BeautifulSoup
+     │
+     ▼
+PostgreSQL raw layer
+     │
+     ▼
+Python Transformation
+     │
+     ▼
+PostgreSQL silver layer
+     │
+     ▼
+SQL Aggregation
+     │
+     ▼
+PostgreSQL gold layer
+     │
+     ▼
+Matplotlib Analytics
 ```
 
 ---
@@ -94,20 +93,23 @@ The project demonstrates practical Data Engineering skills, including:
 #  Workflow
 
 ```text
-AirFlow DAG
-    │
-    ▼
-Extract task
-    │
-    ▼
-Transform task
-    │
-    ▼
-Load task
-    │
-    ▼
-Analytics task
+DAG: olx_apartments_etl (daily, 00:10 UTC)
 
+1. create_tables            — ensure raw & silver tables exist
+
+2. load_raw_data             — scrape OLX, insert into raw layer
+
+3. transform_raw_to_silver   — clean & normalize raw → silver
+
+4. refresh_gold_daily_market_stats — aggregate silver → gold
+
+5. build_gold_plots  — generate analytics charts
+     │
+     ├─ price_per_m2_and_area_plot
+     ├─ negotiate_pie_chart
+     ├─ avg_price_per_m2_district_bar_chart
+     ├─ district_price_heatmap
+     └─ daily_average_price_chart
 ```
 
 ---
@@ -116,9 +118,15 @@ Analytics task
 
 ```text
 │
+├── .github/
+│    └── workflows/
+│        └── check-pre-commit-hooks.yml
+│
 ├── airflow/
 │   ├── config/
 │   ├── dags/
+│   │   └── olx_apartment_pipeline.py
+│   │
 │   ├── logs/
 │   ├── plugins/
 │   └── docker-compose.yaml
@@ -142,7 +150,6 @@ Analytics task
 │       ├── database_functions.py
 │       └── parsing_utils.py
 │
-├── main.py
 ├── requirements.txt
 └── README.md
 ```
@@ -159,7 +166,7 @@ Stores original scraped OLX data before transformation
 
 | Column            | Description                                            |
 |-------------------|--------------------------------------------------------|
-| id                | Unique identifier of the apartment listing                          |
+| id                | Unique identifier of the apartment listing             |
 | district_and_date | Raw location and publication date field                |
 | price             | Raw apartment price                                    |
 | area              | Raw apartment area                                     |
@@ -173,22 +180,21 @@ Table: `silver_apartments`
 
 Contains cleaned and standardized apartment information
 
-| Column              | Description                  |
-|---------------------|------------------------------|
-| id                  | Unique identifier of the apartment listing
-| district            | Apartment district           |
-| date                | Publication date             |
-| price_zl            | Apartment rental price in PLN                |
-| area_m2             | Area in square meters        |
-| ready_to_negotiate  | Boolean flag                 |
-| link                | URL of the original apartment listing    |
+| Column              | Description                                |
+|---------------------|--------------------------------------------|
+| id                  | Unique identifier of the apartment listing |
+| district            | Apartment district                         |
+| date                | Publication date                           |
+| price_zl            | Apartment rental price in PLN              |
+| area_m2             | Area in square meters                      |
+| ready_to_negotiate  | Boolean flag                               |
+| link                | URL of the original apartment listing      |
 
 ---
 
 ## Gold
 Tables:
 
-- `gold_district_statistics`
 - `gold_daily_market_statistics`
 
 Contains business metrics used for analysis.
@@ -218,7 +224,7 @@ git clone https://github.com/katletka123/-ApartmentRentalAirflow
 pip install -r requirements.txt
 ```
 
-3.Create `.env`
+3. Create `.env`
 
 ```env
 DB_HOST=localhost
@@ -228,44 +234,47 @@ DB_USER=postgres
 DB_PASSWORD=password
 ```
 
-
-
-4.Run Docker
-
-```bash
-docker compose up -d --build
-```
-
----
-
 # Running the Project
 
 Run ETL
 
+1. Start all services (Airflow, PostgreSQL)
 ```bash
-python main.py
+docker compose up -d --build
 ```
+2. Log in (default credentials: airflow / airflow, unless changed in docker-compose.yaml)
+3. Enable and trigger the olx_apartments_etl DAG
+
+The DAG will run automatically on schedule (daily at 00:10), or you can trigger it manually from the UI for an immediate run
 
 ---
 
 # Example Output
 
-The pipeline generates:
+The pipeline generates the following analytics charts:
 
-- Average apartment price by district
-- Average price per square meter
-- Apartment publication trends
-- Market statistics
+### Average Price per m² by District
+![Price per m² by district](images/avg_price_per_m2_district_bar_chart.png)
 
+### Negotiable vs Fixed Price Listings
+![Negotiation pie chart](images/negotiate_pie_chart.png)
+
+### District Price Heatmap
+![District price heatmap](images/district_price_heatmap.png)
+
+### Daily Average Price Trend
+![Daily average price](images/daily_average_price_chart.png)
+
+### Average Price Trend
+![Daily average price](images/price_per_m2_and_area.png)
 ---
 
 # Future Improvements
 
-- CI/CD using GitHub Actions
-- Unit tests
-- Cloud deployment
-- Interactive dashboard
-- Data quality monitoring
+1. Unit tests for extraction, transformation, and loading logic
+2. Cloud deployment (e.g. AWS/GCP-hosted Airflow and PostgreSQL)
+3. Interactive dashboard (e.g. Streamlit or Grafana)
+4. Data quality monitoring and alerting
 
 ---
 
