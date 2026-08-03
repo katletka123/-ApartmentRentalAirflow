@@ -195,58 +195,58 @@ Contains cleaned and standardized apartment information
 ## Gold
 Materialized views:
 
-**negotiation_mv**
+`negotiation_mv`
 
 Materialized view containing the number of apartment listings grouped by negotiation availability.
 
-| Column | Data Type | Description                                                                     |
-|--------|-----------|---------------------------------------------------------------------------------|
-| ready_to_negotiate | `BOOLEAN` | Indicates whether the listing is open to price negotiation (`TRUE` or `FALSE`). |
-| count | `BIGINT` | Number of listings with the corresponding negotiation status.                   |
+| Column               | Data Type   | Description                                                                     |
+|----------------------|-------------|---------------------------------------------------------------------------------|
+| ready_to_negotiate   | `BOOLEAN`   | Indicates whether the listing is open to price negotiation (`TRUE` or `FALSE`). |
+| count                | `NUMERIC`   | Number of listings with the corresponding negotiation status.                   |
 
 
-**district_price_mv**
+`district_price_mv`
 
 
 Materialized view containing the number of apartment listings grouped by district and price range (1,000 PLN buckets).
 
-| Column         | Data Types | Description                                                                 |
-|----------------|------------|-----------------------------------------------------------------------------|
-| price_bucket   | INTEGER    | Price range bucket in increments of 1,000 PLN                               |
-| district       | VARCHAR    | Apartment district                                                          |
-| count          | BIGINT     | Number of apartment listings in the corresponding price bucket and district |
+| Column         | Data Types   | Description                                                                 |
+|----------------|--------------|-----------------------------------------------------------------------------|
+| price_bucket   | `NUMERIC`    | Price range bucket in increments of 1,000 PLN                               |
+| district       | `VARCHAR`    | Apartment district                                                          |
+| count          | `NUMERIC`    | Number of apartment listings in the corresponding price bucket and district |
 
 
-**district_average_price_per_m2_mv**
+`district_average_price_per_m2_mv`
 
 
 Materialized view containing the average apartment price per square meter for each district.
 
-| Column             | Data Types | Description                                        |
-|--------------------|------------|----------------------------------------------------|
-| district           | VARCHAR    | Apartment district                                 |
-| avg_price_per_m2   | NUMERIC    | Average apartment price per square meter (PLN/m²) |
+| Column             | Data Types   | Description                                        |
+|--------------------|--------------|----------------------------------------------------|
+| district           | `VARCHAR`    | Apartment district                                 |
+| avg_price_per_m2   | `NUMERIC`    | Average apartment price per square meter (PLN/m²) |
 
 
-**daily_market_stats_mv**
+`daily_market_stats_mv`
 
 Materialized view containing daily apartment market statistics, including average price, and the number of new listings
 
-| Column                 | Data Types | Description                                          |
-|------------------------|------------|------------------------------------------------------|
-| date                   | DATE       | Publication date                                     |
-| avg_price              | NUMERIC    | Average apartment rental price (PLN)                 |
-| new_apartments_count   | BIGINT     | Number of new apartment listings published that day  |
+| Column                 | Data Types   | Description                                          |
+|------------------------|--------------|------------------------------------------------------|
+| date                   | `DATE`       | Publication date                                     |
+| avg_price              | `NUMERIC`    | Average apartment rental price (PLN)                 |
+| new_apartments_count   | `NUMERIC`    | Number of new apartment listings published that day  |
 
 
-**area_and_price_per_m2_mv**
+`area_and_price_per_m2_mv`
 
 Materialized view containing apartment area and the corresponding price per square meter
 
-| Column        | Data Types | Description                                   |
-|---------------|------------|-----------------------------------------------|
-| area_m2       | NUMERIC    | Apartment area in square meters (m²)          |
-| price_per_m2  | NUMERIC    | Apartment price per square meter (PLN/m²)     |
+| Column        | Data Types   | Description                                   |
+|---------------|--------------|-----------------------------------------------|
+| area_m2       | `NUMERIC`    | Apartment area in square meters (m²)          |
+| price_per_m2  | `NUMERIC`    | Apartment price per square meter (PLN/m²)     |
 
 *Source table:* `silver_apartments`
 
