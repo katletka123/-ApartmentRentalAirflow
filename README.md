@@ -270,15 +270,23 @@ pip install -r requirements.txt
 
 Example .env values:
 ```env
-DB_HOST = localhost
-DB_PORT = 5432
-DB_NAME = my_db
-DB_USER = postgres
-DB_PASSWORD = password
+
+APP_DB_USER=app_user
+APP_DB_PASSWORD=change_me
+APP_DB_NAME=my_db
+APP_DB_HOST=postgres-app
+APP_DB_PORT=5432
+APP_DB_INTERNAL_PORT=5433
+
+POSTGRES_USER=airflow
+POSTGRES_PASSWORD=airflow
+POSTGRES_DB=airflow
+
+FERNET_KEY=
+AIRFLOW_UID=
 
 COMPOSE_PROJECT_NAME=airflow
-FERNET_KEY = generate using the command below
-AIRFLOW_UID = generate using the command below
+
 ```
 FERENT_KEY:
 ```bash

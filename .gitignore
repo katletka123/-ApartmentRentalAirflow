@@ -2,7 +2,7 @@
 .venv/
 __pycache__/
 *.pyc
-.env
+airflow/.env
 drafts/
 airflow/logs/
 .DS_Store
