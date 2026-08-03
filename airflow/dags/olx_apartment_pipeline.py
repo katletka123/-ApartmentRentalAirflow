@@ -152,7 +152,7 @@ with DAG(
     default_args=default_args,
     description="Пайплайн: OLX -> raw -> transform -> gold",
     start_date=datetime(2024, 1, 1),
-    schedule="10 0 * * *",
+    schedule="15 22 * * *",
     catchup=False,
     tags=["olx", "apartments", "etl"],
 ) as dag:

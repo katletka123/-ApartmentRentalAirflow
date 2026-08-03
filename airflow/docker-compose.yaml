@@ -54,14 +54,14 @@ x-airflow-common:
     context: ..
     dockerfile: airflow/Dockerfile
   env_file:
-    - ${ENV_FILE_PATH:-../.env}
+    - ${ENV_FILE_PATH:-.env}
   environment:
     &airflow-common-env
     PYTHONPATH: /opt/airflow
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/${POSTGRES_DB:-airflow}
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/${POSTGRES_DB:-airflow}
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY}
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
@@ -97,14 +97,16 @@ x-airflow-common:
 services:
   postgres:
     image: postgres:16
+    env_file:
+      - ${ENV_FILE_PATH:-.env}
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${POSTGRES_USER:-airflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      POSTGRES_DB: ${POSTGRES_DB:-airflow}
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-airflow}" ]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -342,9 +344,13 @@ services:
     image: postgres:16
     restart: always
     env_file:
-      - ${ENV_FILE_PATH:-../.env}
+      - ${ENV_FILE_PATH:-.env}
+    environment:
+      POSTGRES_USER: ${APP_DB_USER}
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD}
+      POSTGRES_DB: ${APP_DB_NAME}
     ports:
-      - "5433:5432"
+      - "${APP_DB_HOST_PORT:-5433}:${APP_DB_PORT:-5432}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
