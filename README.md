@@ -180,15 +180,15 @@ Table: `silver_apartments`
 
 Contains cleaned and standardized apartment information
 
-| Column              | Data Types             | Description                                |
-|---------------------|------------------------|--------------------------------------------|
-| id                  | `INTEGER PRIMARY KEY`  | Unique identifier of the apartment listing |
-| district            | `VARCHAR`              | Apartment district                         |
-| date                | `VARCHAR`              | Publication date                           |
-| price_zl            | `NUMERIC`              | Apartment rental price in PLN              |
-| area_m2             | `NUMERIC `             | Area in square meters                      |
-| ready_to_negotiate  | `BOOLEAN`              | Boolean flag                               |
-| link                | `TEXT`                 | URL of the original apartment listing      |
+| Column              | Data Types            | Description                                |
+|---------------------|-----------------------|--------------------------------------------|
+| id                  | `INTEGER PRIMARY KEY` | Unique identifier of the apartment listing |
+| district            | `VARCHAR`             | Apartment district                         |
+| date                | `DATE`                | Publication date                           |
+| price_zl            | `NUMERIC`             | Apartment rental price in PLN              |
+| area_m2             | `NUMERIC `            | Area in square meters                      |
+| ready_to_negotiate  | `BOOLEAN`             | Boolean flag                               |
+| link                | `TEXT`                | URL of the original apartment listing      |
 
 ---
 
