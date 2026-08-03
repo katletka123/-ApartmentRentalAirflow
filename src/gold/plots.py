@@ -95,8 +95,8 @@ def build_avg_price_per_m2_district_bar_chart(query, conn):
     plt.close()
 
 
-def build_district_price_heatmap(query, conn, params):
-    rows = execute_fetchall(query, conn, params)
+def build_district_price_heatmap(query, conn):
+    rows = execute_fetchall(query, conn)
 
     price_buckets = sorted({row[0] for row in rows})
     districts = sorted({row[1] for row in rows})

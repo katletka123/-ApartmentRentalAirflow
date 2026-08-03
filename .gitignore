@@ -7,4 +7,4 @@ drafts/
 airflow/logs/
 .DS_Store
 reports
-src/source_queries/view/
+src/source_queries/gold/archive/

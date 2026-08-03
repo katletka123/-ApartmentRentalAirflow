@@ -1,0 +1,1 @@
+REFRESH MATERIALIZED VIEW district_price_mv;
