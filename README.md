@@ -164,14 +164,14 @@ Table: `raw_apartments`
 
 Stores original scraped OLX data before transformation
 
-| Column            | Description                                            | Data Types          |
-|-------------------|--------------------------------------------------------|---------------------|
-| id                | Unique identifier of the apartment listing             | INTEGER PRIMARY KEY |
-| district_and_date | Raw location and publication date field                | VARCHAR             |
-| price             | Raw apartment price                                    | VARCHAR             |
-| area              | Raw apartment area                                     | VARCHAR             |
-| ingestion_date    | Date and time when data was ingested into the pipeline | DATE                |
-| link              | URL of the original apartment listing                  | TEXT                |
+| Column            | Data Types            | Description                                            |
+|-------------------|-----------------------|--------------------------------------------------------|
+| id                | `INTEGER PRIMARY KEY` | Unique identifier of the apartment listing             |
+| district_and_date | `VARCHAR`             | Raw location and publication date field                |
+| price             | `VARCHAR`             | Raw apartment price                                    |
+| area              | `VARCHAR`             | Raw apartment area                                     |
+| ingestion_date    | `DATE`                | Date and time when data was ingested into the pipeline |
+| link              | `TEXT`                | URL of the original apartment listing                  |
 ---
 
 ## Silver
@@ -180,33 +180,75 @@ Table: `silver_apartments`
 
 Contains cleaned and standardized apartment information
 
-| Column              | Description                                | Data Types          |
-|---------------------|--------------------------------------------|---------------------|
-| id                  | Unique identifier of the apartment listing | INTEGER PRIMARY KEY |
-| district            | Apartment district                         | VARCHAR             |
-| date                | Publication date                           | VARCHAR             |
-| price_zl            | Apartment rental price in PLN              | NUMERIC             |
-| area_m2             | Area in square meters                      | NUMERIC             |
-| ready_to_negotiate  | Boolean flag                               | BOOLEAN             |
-| link                | URL of the original apartment listing      | TEXT                |
+| Column              | Data Types             | Description                                |
+|---------------------|------------------------|--------------------------------------------|
+| id                  | `INTEGER PRIMARY KEY`  | Unique identifier of the apartment listing |
+| district            | `VARCHAR`              | Apartment district                         |
+| date                | `VARCHAR`              | Publication date                           |
+| price_zl            | `NUMERIC`              | Apartment rental price in PLN              |
+| area_m2             | `NUMERIC `             | Area in square meters                      |
+| ready_to_negotiate  | `BOOLEAN`              | Boolean flag                               |
+| link                | `TEXT`                 | URL of the original apartment listing      |
 
 ---
 
 ## Gold
-Tables:
+Materialized views:
 
-- `gold_daily_market_statistics`
+**negotiation_mv**
 
-Contains business metrics used for analysis.
+Materialized view containing the number of apartment listings grouped by negotiation availability.
 
-Business-ready aggregated statistics.
+| Column | Data Type | Description                                                                     |
+|--------|-----------|---------------------------------------------------------------------------------|
+| ready_to_negotiate | `BOOLEAN` | Indicates whether the listing is open to price negotiation (`TRUE` or `FALSE`). |
+| count | `BIGINT` | Number of listings with the corresponding negotiation status.                   |
 
-Examples:
 
-- Average apartment price
-- Average price per m²
-- Number of listings
-- Daily market statistics
+**district_price_mv**
+
+
+Materialized view containing the number of apartment listings grouped by district and price range (1,000 PLN buckets).
+
+| Column         | Data Types | Description                                                                 |
+|----------------|------------|-----------------------------------------------------------------------------|
+| price_bucket   | INTEGER    | Price range bucket in increments of 1,000 PLN                               |
+| district       | VARCHAR    | Apartment district                                                          |
+| count          | BIGINT     | Number of apartment listings in the corresponding price bucket and district |
+
+
+**district_average_price_per_m2_mv**
+
+
+Materialized view containing the average apartment price per square meter for each district.
+
+| Column             | Data Types | Description                                        |
+|--------------------|------------|----------------------------------------------------|
+| district           | VARCHAR    | Apartment district                                 |
+| avg_price_per_m2   | NUMERIC    | Average apartment price per square meter (PLN/m²) |
+
+
+**daily_market_stats_mv**
+
+Materialized view containing daily apartment market statistics, including average price, and the number of new listings
+
+| Column                 | Data Types | Description                                          |
+|------------------------|------------|------------------------------------------------------|
+| date                   | DATE       | Publication date                                     |
+| avg_price              | NUMERIC    | Average apartment rental price (PLN)                 |
+| new_apartments_count   | BIGINT     | Number of new apartment listings published that day  |
+
+
+**area_and_price_per_m2_mv**
+
+Materialized view containing apartment area and the corresponding price per square meter
+
+| Column        | Data Types | Description                                   |
+|---------------|------------|-----------------------------------------------|
+| area_m2       | NUMERIC    | Apartment area in square meters (m²)          |
+| price_per_m2  | NUMERIC    | Apartment price per square meter (PLN/m²)     |
+
+*Source table:* `silver_apartments`
 
 ---
 
