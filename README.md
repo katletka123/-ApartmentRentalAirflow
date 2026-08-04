@@ -17,6 +17,7 @@ ETL pipeline for collecting, processing and analyzing apartment rental listings 
 - [Workflow](#workflow)
 - [Project Structure](#project-structure)
 - [Database Layers](#database-layers)
+- [Prerequisites](#prerequisites)
 - [Installing](#installing)
 - [Running the Project](#running-the-project)
 - [Example Output](#example-output)
@@ -251,8 +252,18 @@ Materialized view containing apartment area and the corresponding price per squa
 *Source table:* `silver_apartments`
 
 ---
+## Prerequisites
 
-# Installing
+Before you begin, make sure you have the following installed:
+
+- **[Git](https://git-scm.com/downloads)** — to clone the repository
+- **[Docker](https://docs.docker.com/get-docker/)** and **[Docker Compose](https://docs.docker.com/compose/install/)** (Docker Desktop includes both) — to build and run all services
+- At least 4 GB of RAM and 10 GB of free disk space allocated to Docker (Airflow's own resource check will warn you on startup if this isn't met)
+
+No local Python installation is required — everything runs inside Docker containers.
+
+---
+## Installing
 
 1. Clone repository
 
@@ -266,7 +277,7 @@ git clone https://github.com/katletka123/-ApartmentRentalAirflow
 pip install -r requirements.txt
 ```
 
-3. Create `.env`
+3. Create `.env` in airflow folder
 
 Example .env values:
 ```env
@@ -275,15 +286,16 @@ APP_DB_USER=app_user
 APP_DB_PASSWORD=change_me
 APP_DB_NAME=my_db
 APP_DB_HOST=postgres-app
-APP_DB_PORT=5432
 APP_DB_INTERNAL_PORT=5433
 
+# don't change this part
+APP_DB_PORT=5432
 POSTGRES_USER=airflow
 POSTGRES_PASSWORD=airflow
 POSTGRES_DB=airflow
 
-FERNET_KEY=
-AIRFLOW_UID=
+FERNET_KEY=generate using the command below
+AIRFLOW_UID=generate using the command below
 
 COMPOSE_PROJECT_NAME=airflow
 
@@ -307,6 +319,8 @@ Run ETL
 docker compose up -d --build
 ```
 2. Log in (default credentials: airflow / airflow, unless changed in docker-compose.yaml)
+
+You must run this command from the `airflow/` folder (where `docker-compose.yaml` is located) — otherwise `.env` won't be picked up, and environment variables (passwords, `FERNET_KEY`, `AIRFLOW_UID`, etc.) will be empty.
 3. Enable and trigger the olx_apartments_etl DAG
 
 The DAG will run automatically on schedule (daily at 00:10), or you can trigger it manually from the UI for an immediate run
