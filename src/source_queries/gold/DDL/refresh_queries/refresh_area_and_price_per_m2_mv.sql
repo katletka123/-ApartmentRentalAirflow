@@ -1,0 +1,1 @@
+REFRESH MATERIALIZED VIEW area_and_price_per_m2_mv;

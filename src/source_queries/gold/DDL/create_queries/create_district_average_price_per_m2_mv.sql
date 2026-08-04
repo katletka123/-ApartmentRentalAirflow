@@ -1,3 +1,4 @@
+CREATE MATERIALIZED VIEW IF NOT EXISTS district_average_price_per_m2_mv AS
 WITH tmp_table AS (
     SELECT
         district,

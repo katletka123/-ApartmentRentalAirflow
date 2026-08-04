@@ -1,3 +1,4 @@
+CREATE MATERIALIZED VIEW IF NOT EXISTS negotiation_mv AS
 SELECT
     ready_to_negotiate,
     COUNT(*)

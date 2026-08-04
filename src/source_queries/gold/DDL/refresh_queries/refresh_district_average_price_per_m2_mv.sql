@@ -1,0 +1,1 @@
+REFRESH MATERIALIZED VIEW district_average_price_per_m2_mv;

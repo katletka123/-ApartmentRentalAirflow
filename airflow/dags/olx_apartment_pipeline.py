@@ -21,7 +21,6 @@ from src.gold.plots import (
     build_avg_price_per_m2_district_bar_chart,
     build_district_price_heatmap,
     build_daily_average_price_chart,
-    STEP,
 )
 
 
@@ -49,8 +48,29 @@ def handle_connection(func):
 def create_tables(conn):
     create_raw_table = load_sql("raw/create_raw_table_query.sql")
     create_silver_table = load_sql("silver/create_silver_table_query.sql")
+    create_area_and_price_per_m2_mv = load_sql(
+        "gold/DDL/create_queries/create_area_and_price_per_m2_mv.sql"
+    )
+    create_daily_market_stats_mv = load_sql(
+        "gold/DDL/create_queries/create_daily_market_stats_mv.sql"
+    )
+    create_district_average_price_per_m2_mv = load_sql(
+        "gold/DDL/create_queries/create_district_average_price_per_m2_mv.sql"
+    )
+    create_district_price_mv = load_sql(
+        "gold/DDL/create_queries/create_district_price_mv.sql"
+    )
+    create_negotiation_mv = load_sql(
+        "gold/DDL/create_queries/create_negotiation_mv.sql"
+    )
+
     execute_commit(create_raw_table, conn)
     execute_commit(create_silver_table, conn)
+    execute_commit(create_area_and_price_per_m2_mv, conn)
+    execute_commit(create_daily_market_stats_mv, conn)
+    execute_commit(create_district_average_price_per_m2_mv, conn)
+    execute_commit(create_district_price_mv, conn)
+    execute_commit(create_negotiation_mv, conn)
 
 
 @handle_connection
@@ -72,35 +92,47 @@ def transform_raw_to_silver(conn):
 
 @handle_connection
 def refresh_gold_daily_market_stats(conn):
-    create_daily_market_stats = load_sql("gold/create_gold_daily_market_stats.sql")
-    select_daily_market_stats = load_sql(
-        "gold/select_daily_market_stats_from_silver.sql"
+    refresh_area_and_price_per_m2_mv = load_sql(
+        "gold/DDL/refresh_queries/refresh_area_and_price_per_m2_mv.sql"
     )
-    insert_gold_daily_market_stats = load_sql("gold/insert_gold_daily_market_stats.sql")
-    execute_commit(create_daily_market_stats, conn)
-    daily_market_data = execute_fetchall(select_daily_market_stats, conn)
-    execute_many(insert_gold_daily_market_stats, daily_market_data, conn)
+    refresh_daily_market_stats_mv = load_sql(
+        "gold/DDL/refresh_queries/refresh_daily_market_stats_mv.sql"
+    )
+    refresh_district_average_price_per_m2_mv = load_sql(
+        "gold/DDL/refresh_queries/refresh_district_average_price_per_m2_mv.sql"
+    )
+    refresh_district_price_mv = load_sql(
+        "gold/DDL/refresh_queries/refresh_district_price_mv.sql"
+    )
+    refresh_negotiation_mv = load_sql(
+        "gold/DDL/refresh_queries/refresh_negotiation_mv.sql"
+    )
+
+    execute_commit(refresh_area_and_price_per_m2_mv, conn)
+    execute_commit(refresh_daily_market_stats_mv, conn)
+    execute_commit(refresh_district_average_price_per_m2_mv, conn)
+    execute_commit(refresh_district_price_mv, conn)
+    execute_commit(refresh_negotiation_mv, conn)
 
 
 @handle_connection
 def build_gold_plots(conn):
     select_area_and_price_per_m2_plot_data = load_sql(
-        "gold/select_area_and_price_per_m2_plot_data.sql"
+        "gold/DQL/select_area_and_price_per_m2.sql"
     )
-    select_negotiation_plot_data = load_sql("gold/select_negotiation_plot_data.sql")
+    select_negotiation_plot_data = load_sql("gold/DQL/select_negotiation.sql")
     select_district_average_price_per_m2_bar_chart_data = load_sql(
-        "gold/select_district_average_price_per_m2_bar_chart_data.sql"
+        "gold/DQL/select_district_average_price_per_m2.sql"
     )
-    select_district_price_heatmap_data = load_sql(
-        "gold/select_district_price_heatmap_data.sql"
-    )
-    select_daily_average_price_data = load_sql("gold/select_daily_average_price.sql")
+    select_district_price_heatmap_data = load_sql("gold/DQL/select_district_price.sql")
+    select_daily_average_price_data = load_sql("gold/DQL/select_daily_market_stats.sql")
+
     build_price_per_m2_and_area_plot(select_area_and_price_per_m2_plot_data, conn)
     build_negotiate_pie_chart(select_negotiation_plot_data, conn)
     build_avg_price_per_m2_district_bar_chart(
         select_district_average_price_per_m2_bar_chart_data, conn
     )
-    build_district_price_heatmap(select_district_price_heatmap_data, conn, (STEP, STEP))
+    build_district_price_heatmap(select_district_price_heatmap_data, conn)
     build_daily_average_price_chart(select_daily_average_price_data, conn)
 
 
@@ -120,7 +152,7 @@ with DAG(
     default_args=default_args,
     description="Пайплайн: OLX -> raw -> transform -> gold",
     start_date=datetime(2024, 1, 1),
-    schedule="10 0 * * *",
+    schedule="15 22 * * *",
     catchup=False,
     tags=["olx", "apartments", "etl"],
 ) as dag:

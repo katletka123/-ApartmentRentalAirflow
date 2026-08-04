@@ -1,0 +1,1 @@
+REFRESH MATERIALIZED VIEW daily_market_stats_mv;

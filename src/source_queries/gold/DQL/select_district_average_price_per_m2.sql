@@ -1,0 +1,2 @@
+SELECT district, avg_price_per_m2
+FROM district_average_price_per_m2_mv;
