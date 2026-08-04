@@ -277,6 +277,7 @@ git clone https://github.com/katletka123/-ApartmentRentalAirflow
 pip install -r requirements.txt
 ```
 
+
 3. Create `.env` in airflow folder
 
 Example .env values:
@@ -297,7 +298,7 @@ POSTGRES_DB=airflow
 FERNET_KEY=generate using the command below
 AIRFLOW_UID=generate using the command below
 
-COMPOSE_PROJECT_NAME=airflow
+COMPOSE_PROJECT_NAME=airflow_test
 
 ```
 FERENT_KEY:
@@ -315,12 +316,13 @@ echo $(id -u)
 Run ETL
 
 1. Start all services (Airflow, PostgreSQL)
+
+ You must run this command from the `airflow/` folder (where `docker-compose.yaml` is located) — otherwise `.env` won't be picked up, and environment variables (passwords, `FERNET_KEY`, `AIRFLOW_UID`, etc.) will be empty.
 ```bash
 docker compose up -d --build
 ```
 2. Log in (default credentials: airflow / airflow, unless changed in docker-compose.yaml)
 
-You must run this command from the `airflow/` folder (where `docker-compose.yaml` is located) — otherwise `.env` won't be picked up, and environment variables (passwords, `FERNET_KEY`, `AIRFLOW_UID`, etc.) will be empty.
 3. Enable and trigger the olx_apartments_etl DAG
 
 The DAG will run automatically on schedule (daily at 00:10), or you can trigger it manually from the UI for an immediate run

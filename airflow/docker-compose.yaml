@@ -356,6 +356,4 @@ services:
 
 volumes:
   postgres-db-volume:
-    name: airflow_postgres_db_volume
   postgres_data:
-    name: postgres_data
