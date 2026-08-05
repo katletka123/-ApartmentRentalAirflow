@@ -13,8 +13,8 @@ YESTERDAY = datetime.today().date() - timedelta(days=1)
 PAGE_COUNT = 26
 
 
-def date_separate(date_and_district):
-    district_date_parts = date_and_district.split(" - ")
+def date_separate(district_and_date):
+    district_date_parts = district_and_date.split(" - ")
     date = date_generate(district_date_parts[1])
     return date
 
