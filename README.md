@@ -268,7 +268,7 @@ No local Python installation is required — everything runs inside Docker conta
 1. Clone repository
 
 ```bash
-git clone https://github.com/katletka123/-ApartmentRentalAirflow
+git clone https://github.com/nkozlova174/-ApartmentRentalAirflow
 ```
 
 2. Install dependencies
